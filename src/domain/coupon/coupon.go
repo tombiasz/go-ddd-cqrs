@@ -4,14 +4,24 @@ import "fmt"
 
 type coupon struct {
 	id          string
-	email       string
+	email       *email
 	code        string
 	description string
 	status      string
 }
 
 func New(id, email, code, description, status string) *coupon {
-	return &coupon{id, email, code, description, status}
+	return &coupon{id, newEmail(email), code, description, status}
+}
+
+func Create(id, email, code, description, status string) (*coupon, error) {
+	e, err := createEmail(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &coupon{id, e, code, description, status}, nil
 }
 
 func (c coupon) Id() string {
@@ -19,7 +29,7 @@ func (c coupon) Id() string {
 }
 
 func (c coupon) Email() string {
-	return c.email
+	return c.email.value
 }
 
 func (c coupon) Code() string {

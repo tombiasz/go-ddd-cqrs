@@ -2,12 +2,18 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"go-coupons/src/domain/coupon"
 )
 
 func main() {
-	c1 := coupon.New("1", "Foo", "Bar", "test", "test")
+	c1, err := coupon.Create("1", "Fo", "Bar", "test", "test")
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	fmt.Println(c1)
 	fmt.Println(c1.Id())
