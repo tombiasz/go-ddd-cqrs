@@ -1,6 +1,6 @@
 package coupon
 
-type Coupon struct {
+type coupon struct {
 	Id          string
 	Email       string
 	Code        string
@@ -8,6 +8,6 @@ type Coupon struct {
 	Status      string
 }
 
-func New(id, email, code, description, status string) *Coupon {
-	return &Coupon{id, email, code, description, status}
+func New(id, email, code, description, status string) *coupon {
+	return &coupon{id, email, code, description, status}
 }

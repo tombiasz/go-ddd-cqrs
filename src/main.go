@@ -10,4 +10,5 @@ func main() {
 	c1 := coupon.New("1", "Foo", "Bar", "test", "test")
 
 	fmt.Println(c1)
+	fmt.Println(c1.Id)
 }
