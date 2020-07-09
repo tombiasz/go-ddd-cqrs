@@ -7,3 +7,7 @@ type Coupon struct {
 	Description string
 	Status      string
 }
+
+func New(id, email, code, description, status string) *Coupon {
+	return &Coupon{id, email, code, description, status}
+}
