@@ -1,5 +1,7 @@
 package coupon
 
+import "fmt"
+
 type coupon struct {
 	id          string
 	email       string
@@ -30,4 +32,8 @@ func (c coupon) Description() string {
 
 func (c coupon) Status() string {
 	return c.status
+}
+
+func (c coupon) String() string {
+	return fmt.Sprintf("<Coupon: %s %s (%s)>", c.email, c.code, c.id)
 }
