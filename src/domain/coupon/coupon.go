@@ -6,22 +6,41 @@ type coupon struct {
 	id          string
 	email       *email
 	code        string
-	description string
+	description *description
 	status      string
 }
 
 func New(id, email, code, description, status string) *coupon {
-	return &coupon{id, newEmail(email), code, description, status}
+	return &coupon{
+		id:          id,
+		email:       newEmail(email),
+		code:        code,
+		description: newDescription(description),
+		status:      status,
+	}
 }
 
 func Create(id, email, code, description, status string) (*coupon, error) {
-	e, err := createEmail(email)
+	e, err1 := createEmail(email)
+	d, err2 := createDescription(description)
 
-	if err != nil {
-		return nil, err
+	if err1 != nil {
+		return nil, err1
 	}
 
-	return &coupon{id, e, code, description, status}, nil
+	if err2 != nil {
+		return nil, err2
+	}
+
+	c := &coupon{
+		id:          id,
+		email:       e,
+		code:        code,
+		description: d,
+		status:      status,
+	}
+
+	return c, nil
 }
 
 func (c coupon) Id() string {
@@ -37,7 +56,7 @@ func (c coupon) Code() string {
 }
 
 func (c coupon) Description() string {
-	return c.description
+	return c.description.value
 }
 
 func (c coupon) Status() string {
