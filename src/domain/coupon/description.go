@@ -1,6 +1,6 @@
 package coupon
 
-import "errors"
+import "go-coupons/src/domain"
 
 type description struct {
 	value string
@@ -10,13 +10,13 @@ func newDescription(value string) *description {
 	return &description{value}
 }
 
-func createDescription(value string) (*description, error) {
+func createDescription(value string) (*description, *domain.DomainError) {
 	if value == "" {
-		return nil, errors.New("description cannot be empty")
+		return nil, domain.NewDomainError("description", "description cannot be empty")
 	}
 
 	if len(value) > 200 {
-		return nil, errors.New("description must have less than 200 characters")
+		return nil, domain.NewDomainError("description", "description must have less than 200 characters")
 	}
 
 	return &description{value}, nil

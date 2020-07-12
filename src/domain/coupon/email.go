@@ -1,6 +1,6 @@
 package coupon
 
-import "errors"
+import "go-coupons/src/domain"
 
 type email struct {
 	value string
@@ -10,13 +10,13 @@ func newEmail(value string) *email {
 	return &email{value}
 }
 
-func createEmail(value string) (*email, error) {
+func createEmail(value string) (*email, *domain.DomainError) {
 	if value == "" {
-		return nil, errors.New("email cannot be empty")
+		return nil, domain.NewDomainError("email", "email cannot be empty")
 	}
 
 	if len(value) < 3 || len(value) > 255 {
-		return nil, errors.New("email is invalid")
+		return nil, domain.NewDomainError("email", "email is invalid")
 	}
 
 	return &email{value}, nil
