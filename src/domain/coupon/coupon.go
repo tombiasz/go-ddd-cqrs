@@ -2,7 +2,6 @@ package coupon
 
 import (
 	"fmt"
-	"go-coupons/src/domain"
 )
 
 type coupon struct {
@@ -23,25 +22,16 @@ func New(id, email, code, description, status string) *coupon {
 	}
 }
 
-func Create(id, email, code, description, status string) (*coupon, domain.DomainErrors) {
-	e, err1 := createEmail(email)
-	d, err2 := createDescription(description)
-
-	errs := domain.CombineDomainErrors(err1, err2)
-
-	if errs != nil {
-		return nil, errs
-	}
-
+func Create(id string, email *email, code string, description *description, status string) *coupon {
 	c := &coupon{
 		id:          id,
-		email:       e,
+		email:       email,
 		code:        code,
-		description: d,
+		description: description,
 		status:      status,
 	}
 
-	return c, nil
+	return c
 }
 
 func (c coupon) Id() string {

@@ -10,7 +10,7 @@ func newEmail(address string) *email {
 	return &email{address}
 }
 
-func createEmail(address string) (*email, *domain.DomainError) {
+func CreateEmail(address string) (*email, *domain.DomainError) {
 	if address == "" {
 		return nil, domain.NewDomainError("email", "email address cannot be empty")
 	}

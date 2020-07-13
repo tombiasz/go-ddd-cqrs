@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"go-coupons/src/domain"
 
 	"go-coupons/src/domain/coupon"
 )
 
 func main() {
-	// sad path
-	_, err := coupon.Create("1", "Fo", "Bar", "", "test")
+	_, err1 := coupon.CreateEmail("Fo")
+	_, err2 := coupon.CreateDescription("")
+
+	err := domain.CombineDomainErrors(err1, err2)
 
 	if err != nil {
 		// print all
@@ -27,13 +29,11 @@ func main() {
 		}
 	}
 
-	// happy path
-	c1, err1 := coupon.Create("1", "Foo", "Bar", "Description", "test")
+	e2, _ := coupon.CreateEmail("Foo")
+	d2, _ := coupon.CreateDescription("description")
 
-	if err1 != nil {
-		fmt.Println(err1)
-		os.Exit(1)
-	}
+	// happy path
+	c1 := coupon.Create("1", e2, "Bar", d2, "test")
 
 	fmt.Println(c1)
 	fmt.Println(c1.Id())

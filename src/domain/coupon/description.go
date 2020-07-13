@@ -10,7 +10,7 @@ func newDescription(value string) *description {
 	return &description{value}
 }
 
-func createDescription(value string) (*description, *domain.DomainError) {
+func CreateDescription(value string) (*description, *domain.DomainError) {
 	if value == "" {
 		return nil, domain.NewDomainError("description", "description cannot be empty")
 	}
