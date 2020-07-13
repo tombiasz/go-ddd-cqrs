@@ -29,11 +29,17 @@ func main() {
 		}
 	}
 
+	_, err3 := coupon.Create("1", nil, "Bar", nil, "test")
+
+	if err3 != nil {
+		fmt.Println(err3)
+	}
+
 	e2, _ := coupon.CreateEmail("Foo")
 	d2, _ := coupon.CreateDescription("description")
 
 	// happy path
-	c1 := coupon.Create("1", e2, "Bar", d2, "test")
+	c1, _ := coupon.Create("1", e2, "Bar", d2, "test")
 
 	fmt.Println(c1)
 	fmt.Println(c1.Id())
