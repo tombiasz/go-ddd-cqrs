@@ -49,7 +49,7 @@ func (c coupon) Id() string {
 }
 
 func (c coupon) Email() string {
-	return c.email.value
+	return c.email.address
 }
 
 func (c coupon) Code() string {
