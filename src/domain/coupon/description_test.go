@@ -2,7 +2,7 @@ package coupon
 
 import "testing"
 
-var desc200CharsLong = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et urna efficitur, sodales nibh sit amet, dapibus ipsum. Quisque malesuada libero in diam fermentum rutrum. Mauris eget porttitor proin."
+var desc201CharsLong = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et urna efficitur, sodales nibh sit amet, dapibus ipsum. Quisque malesuada libero in diam fermentum rutrum. Mauris eget porttitor proin."
 var validDesc = "Lorem ipsum dolor sit amet."
 
 func TestCreateDescription(t *testing.T) {
@@ -14,11 +14,11 @@ func TestCreateDescription(t *testing.T) {
 		}
 	})
 
-	t.Run("returns error when value longer than 200 chars", func(t *testing.T) {
-		_, err := CreateDescription(desc200CharsLong)
+	t.Run("returns error when value longer than 200 chars long", func(t *testing.T) {
+		_, err := CreateDescription(desc201CharsLong)
 
-		if err != DescriptionCannotBeLongerThan200Chars {
-			t.Errorf("got %q, want %q", err, DescriptionCannotBeLongerThan200Chars)
+		if err != DescriptionCannotBeLongerThan200CharsErr {
+			t.Errorf("got %q, want %q", err, DescriptionCannotBeLongerThan200CharsErr)
 		}
 	})
 

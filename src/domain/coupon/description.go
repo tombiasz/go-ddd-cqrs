@@ -16,7 +16,7 @@ func CreateDescription(value string) (*description, *domain.DomainError) {
 	}
 
 	if len(value) > 200 {
-		return nil, DescriptionCannotBeLongerThan200Chars
+		return nil, DescriptionCannotBeLongerThan200CharsErr
 	}
 
 	return &description{value}, nil

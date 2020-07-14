@@ -12,11 +12,11 @@ func newEmail(address string) *email {
 
 func CreateEmail(address string) (*email, *domain.DomainError) {
 	if address == "" {
-		return nil, domain.NewDomainError("email", "email address cannot be empty")
+		return nil, EmailCannotBeEmptyErr
 	}
 
 	if len(address) < 3 || len(address) > 255 {
-		return nil, domain.NewDomainError("email", "email address is invalid")
+		return nil, EmailIsInvalidErr
 	}
 
 	return &email{address}, nil
