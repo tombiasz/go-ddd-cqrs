@@ -12,11 +12,11 @@ func newDescription(value string) *description {
 
 func CreateDescription(value string) (*description, *domain.DomainError) {
 	if value == "" {
-		return nil, domain.NewDomainError("description", "description cannot be empty")
+		return nil, DescriptionCannotBeEmptyErr
 	}
 
 	if len(value) > 200 {
-		return nil, domain.NewDomainError("description", "description must have less than 200 characters")
+		return nil, DescriptionCannotBeLongerThan200Chars
 	}
 
 	return &description{value}, nil
