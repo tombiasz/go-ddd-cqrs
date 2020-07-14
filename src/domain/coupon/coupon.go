@@ -26,12 +26,12 @@ func New(id, email, code, description, status string) *coupon {
 func Create(id string, email *email, code string, description *description, status string) (*coupon, domain.DomainErrors) {
 	var emailErr *domain.DomainError
 	if email == nil {
-		emailErr = domain.NewDomainError("email", "email address cannot be nil")
+		emailErr = EmailCannotBeNilErr
 	}
 
 	var descErr *domain.DomainError
 	if description == nil {
-		descErr = domain.NewDomainError("description", "description cannot be nil")
+		descErr = DescriptionCannotBeNilErr
 	}
 
 	err := domain.CombineDomainErrors(emailErr, descErr)
