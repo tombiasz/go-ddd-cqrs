@@ -5,25 +5,34 @@ import (
 	"go-coupons/src/domain"
 )
 
+const DefaultCouponExpirationDays = 7
+
 type coupon struct {
 	id          string
 	email       *email
 	code        string
 	description *description
-	status      string
+	status      status
 }
 
-func New(id, email, code, description, status string) *coupon {
+func New(id string, email *email, code string, description *description, status status) *coupon {
 	return &coupon{
-		id:          id,
-		email:       newEmail(email),
-		code:        code,
-		description: newDescription(description),
-		status:      status,
+		id,
+		email,
+		code,
+		description,
+		status,
 	}
 }
 
-func Create(id string, email *email, code string, description *description, status string) (*coupon, domain.DomainErrors) {
+func RegisterCoupon(
+	id string,
+	email *email,
+	code string,
+	description *description,
+	expirationInDays uint8,
+	timeProvider domain.TimeProvider,
+) (*coupon, domain.DomainErrors) {
 	var emailErr *domain.DomainError
 	if email == nil {
 		emailErr = EmailCannotBeNilErr
@@ -44,7 +53,7 @@ func Create(id string, email *email, code string, description *description, stat
 		email:       email,
 		code:        code,
 		description: description,
-		status:      status,
+		status:      CreateActiveStatus(expirationInDays, timeProvider),
 	}
 
 	return c, nil
@@ -67,7 +76,7 @@ func (c coupon) Description() string {
 }
 
 func (c coupon) Status() string {
-	return c.status
+	return c.status.Status()
 }
 
 func (c coupon) String() string {

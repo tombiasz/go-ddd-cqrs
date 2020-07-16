@@ -2,14 +2,19 @@ package coupon
 
 import (
 	"go-coupons/src/domain"
+	timeutils "go-coupons/src/utils/time"
 	"testing"
+	"time"
 )
 
-func TestCreateCoupon(t *testing.T) {
+func TestRegisterCoupon(t *testing.T) {
+	var fakeNow = time.Now()
+	var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
+
 	t.Run("returns error when nil was passed as email", func(t *testing.T) {
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
 
-		_, err := Create("id", nil, "code", desc, "status")
+		_, err := RegisterCoupon("id", nil, "code", desc, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -24,7 +29,7 @@ func TestCreateCoupon(t *testing.T) {
 	t.Run("returns error when nil was passed as description", func(t *testing.T) {
 		var email, _ = CreateEmail("foo@bar.com")
 
-		_, err := Create("id", email, "code", nil, "status")
+		_, err := RegisterCoupon("id", email, "code", nil, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -37,7 +42,7 @@ func TestCreateCoupon(t *testing.T) {
 	})
 
 	t.Run("returns both errors when nil was passed as email and description", func(t *testing.T) {
-		_, err := Create("id", nil, "code", nil, "status")
+		_, err := RegisterCoupon("id", nil, "code", nil, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected errors but did not received any")
@@ -55,14 +60,13 @@ func TestCreateCoupon(t *testing.T) {
 		}
 	})
 
-	t.Run("creates a coupon", func(t *testing.T) {
+	t.Run("registers a new coupon", func(t *testing.T) {
 		var id = "id"
 		var email, _ = CreateEmail("foo@bar.com")
 		var code = "code"
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
-		var status = "status"
 
-		c, _ := Create(id, email, code, desc, status)
+		c, _ := RegisterCoupon(id, email, code, desc, 7, fixedTimeProvider)
 
 		if c.Id() != id {
 			t.Errorf("expected %q but received %q", id, c.Id())
@@ -80,8 +84,8 @@ func TestCreateCoupon(t *testing.T) {
 			t.Errorf("expected %q but received %q", desc.value, c.Description())
 		}
 
-		if c.Status() != status {
-			t.Errorf("expected %q but received %q", status, c.Status())
+		if c.Status() != ActiveStatus {
+			t.Errorf("expected %q but received %q", ActiveStatus, c.Status())
 		}
 	})
 }

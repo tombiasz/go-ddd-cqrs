@@ -9,7 +9,7 @@ const ActiveStatus = "Active"
 const ExpiredStatus = "Expired"
 const UsedStatus = "Used"
 
-type Status interface {
+type status interface {
 	Status() string
 }
 

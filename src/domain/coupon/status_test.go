@@ -1,23 +1,18 @@
 package coupon
 
 import (
+	timeutils "go-coupons/src/utils/time"
 	"testing"
 	"time"
 )
 
-var fakeNow = time.Now()
-
-type fakeTimeProvider struct{}
-
-func (t *fakeTimeProvider) Now() time.Time {
-	return fakeNow
-}
-
 func TestCreateActiveStatus(t *testing.T) {
 	t.Run("creates an active status", func(t *testing.T) {
+		var fakeNow = time.Now()
+		var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
 		const expiresInDays = 7
 
-		s := CreateActiveStatus(expiresInDays, &fakeTimeProvider{})
+		s := CreateActiveStatus(expiresInDays, fixedTimeProvider)
 
 		if s.Status() != ActiveStatus {
 			t.Errorf("got %q, want %q", s.Status(), ActiveStatus)
@@ -36,9 +31,12 @@ func TestCreateActiveStatus(t *testing.T) {
 func TestActiveStatusUse(t *testing.T) {
 	t.Run("using active status should return used status", func(t *testing.T) {
 		const expiresInDays = 7
-		a := CreateActiveStatus(expiresInDays, &fakeTimeProvider{})
+		var fakeNow = time.Now()
+		var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
 
-		u := a.Use(&fakeTimeProvider{})
+		a := CreateActiveStatus(expiresInDays, fixedTimeProvider)
+
+		u := a.Use(fixedTimeProvider)
 
 		if u.Status() != UsedStatus {
 			t.Errorf("got %q, want %q", u.Status(), UsedStatus)
@@ -53,7 +51,10 @@ func TestActiveStatusUse(t *testing.T) {
 func TestActiveStatusExpire(t *testing.T) {
 	t.Run("expiring active status should return expired status", func(t *testing.T) {
 		const expiresInDays = 7
-		a := CreateActiveStatus(expiresInDays, &fakeTimeProvider{})
+		var fakeNow = time.Now()
+		var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
+
+		a := CreateActiveStatus(expiresInDays, fixedTimeProvider)
 
 		e := a.Expire()
 
