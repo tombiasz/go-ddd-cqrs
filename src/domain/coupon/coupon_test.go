@@ -2,6 +2,7 @@ package coupon
 
 import (
 	"go-coupons/src/domain"
+	idutils "go-coupons/src/utils/identity"
 	timeutils "go-coupons/src/utils/time"
 	"testing"
 	"time"
@@ -10,11 +11,13 @@ import (
 func TestRegisterCoupon(t *testing.T) {
 	var fakeNow = time.Now()
 	var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
+	var fakeId = "id"
+	var fixedIdProvider = &idutils.FixedIdentityProvider{fakeId}
 
 	t.Run("returns error when nil was passed as email", func(t *testing.T) {
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
 
-		_, err := RegisterCoupon("id", nil, "code", desc, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(nil, "code", desc, 7, fixedTimeProvider, fixedIdProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -29,7 +32,7 @@ func TestRegisterCoupon(t *testing.T) {
 	t.Run("returns error when nil was passed as description", func(t *testing.T) {
 		var email, _ = CreateEmail("foo@bar.com")
 
-		_, err := RegisterCoupon("id", email, "code", nil, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(email, "code", nil, 7, fixedTimeProvider, fixedIdProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -42,7 +45,7 @@ func TestRegisterCoupon(t *testing.T) {
 	})
 
 	t.Run("returns both errors when nil was passed as email and description", func(t *testing.T) {
-		_, err := RegisterCoupon("id", nil, "code", nil, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(nil, "code", nil, 7, fixedTimeProvider, fixedIdProvider)
 
 		if err == nil {
 			t.Errorf("expected errors but did not received any")
@@ -61,15 +64,14 @@ func TestRegisterCoupon(t *testing.T) {
 	})
 
 	t.Run("registers a new coupon", func(t *testing.T) {
-		var id = "id"
 		var email, _ = CreateEmail("foo@bar.com")
 		var code = "code"
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
 
-		c, _ := RegisterCoupon(id, email, code, desc, 7, fixedTimeProvider)
+		c, _ := RegisterCoupon(email, code, desc, 7, fixedTimeProvider, fixedIdProvider)
 
-		if c.Id() != id {
-			t.Errorf("expected %q but received %q", id, c.Id())
+		if c.Id() != fakeId {
+			t.Errorf("expected %q but received %q", fakeId, c.Id())
 		}
 
 		if c.Email() != email.address {

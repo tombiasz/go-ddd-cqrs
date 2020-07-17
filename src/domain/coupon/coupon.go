@@ -8,14 +8,20 @@ import (
 const DefaultCouponExpirationDays = 7
 
 type coupon struct {
-	id          string
+	id          *couponId
 	email       *email
 	code        string
 	description *description
 	status      status
 }
 
-func New(id string, email *email, code string, description *description, status status) *coupon {
+func New(
+	id *couponId,
+	email *email,
+	code string,
+	description *description,
+	status status,
+) *coupon {
 	return &coupon{
 		id,
 		email,
@@ -26,12 +32,12 @@ func New(id string, email *email, code string, description *description, status 
 }
 
 func RegisterCoupon(
-	id string,
 	email *email,
 	code string,
 	description *description,
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
+	identityProvider domain.IdentityProvider,
 ) (*coupon, domain.DomainErrors) {
 	var emailErr *domain.DomainError
 	if email == nil {
@@ -49,7 +55,7 @@ func RegisterCoupon(
 	}
 
 	c := &coupon{
-		id:          id,
+		id:          CreateCouponId(identityProvider.NextID()),
 		email:       email,
 		code:        code,
 		description: description,
@@ -60,7 +66,7 @@ func RegisterCoupon(
 }
 
 func (c coupon) Id() string {
-	return c.id
+	return c.id.value
 }
 
 func (c coupon) Email() string {
