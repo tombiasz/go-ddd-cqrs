@@ -37,7 +37,6 @@ func RegisterCoupon(
 	description *description,
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
-	identityProvider domain.IdentityProvider,
 ) (*coupon, domain.DomainErrors) {
 	var emailErr *domain.DomainError
 	if email == nil {
@@ -55,7 +54,7 @@ func RegisterCoupon(
 	}
 
 	c := &coupon{
-		id:          CreateCouponId(identityProvider.NextID()),
+		id:          CreateCouponId(),
 		email:       email,
 		code:        code,
 		description: description,
@@ -66,7 +65,7 @@ func RegisterCoupon(
 }
 
 func (c coupon) Id() string {
-	return c.id.value
+	return c.id.Value()
 }
 
 func (c coupon) Email() string {

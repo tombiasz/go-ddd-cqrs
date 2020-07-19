@@ -2,19 +2,22 @@ package coupon
 
 import (
 	"fmt"
-	"go-coupons/src/domain"
+
+	uuid "github.com/google/uuid"
 )
 
 type couponId struct {
-	value string
+	value uuid.UUID
 }
 
-func CreateCouponId(id *domain.ID) *couponId {
-	return &couponId{id.Value()}
+func CreateCouponId() *couponId {
+	var id = uuid.New()
+
+	return &couponId{id}
 }
 
 func (id *couponId) Value() string {
-	return id.value
+	return id.value.String()
 }
 
 func (id *couponId) String() string {
