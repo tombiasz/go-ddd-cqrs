@@ -10,7 +10,7 @@ type couponId struct {
 	value uuid.UUID
 }
 
-func CreateCouponId() *couponId {
+func GenerateCouponId() *couponId {
 	var id = uuid.New()
 
 	return &couponId{id}

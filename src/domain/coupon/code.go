@@ -10,7 +10,7 @@ type code struct {
 	value string
 }
 
-func CreateCode() *code {
+func GenerateCode() *code {
 	var c = shortid.MustGenerate()
 
 	return &code{c}

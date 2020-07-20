@@ -53,9 +53,9 @@ func RegisterCoupon(
 	}
 
 	c := &coupon{
-		id:          CreateCouponId(),
+		id:          GenerateCouponId(),
 		email:       email,
-		code:        CreateCode(),
+		code:        GenerateCode(),
 		description: description,
 		status:      CreateActiveStatus(expirationInDays, timeProvider),
 	}
