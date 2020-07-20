@@ -14,7 +14,7 @@ func TestRegisterCoupon(t *testing.T) {
 	t.Run("returns error when nil was passed as email", func(t *testing.T) {
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
 
-		_, err := RegisterCoupon(nil, "code", desc, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(nil, desc, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -29,7 +29,7 @@ func TestRegisterCoupon(t *testing.T) {
 	t.Run("returns error when nil was passed as description", func(t *testing.T) {
 		var email, _ = CreateEmail("foo@bar.com")
 
-		_, err := RegisterCoupon(email, "code", nil, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(email, nil, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -42,7 +42,7 @@ func TestRegisterCoupon(t *testing.T) {
 	})
 
 	t.Run("returns both errors when nil was passed as email and description", func(t *testing.T) {
-		_, err := RegisterCoupon(nil, "code", nil, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(nil, nil, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected errors but did not received any")
@@ -62,10 +62,9 @@ func TestRegisterCoupon(t *testing.T) {
 
 	t.Run("registers a new coupon", func(t *testing.T) {
 		var email, _ = CreateEmail("foo@bar.com")
-		var code = "code"
 		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
 
-		c, _ := RegisterCoupon(email, code, desc, 7, fixedTimeProvider)
+		c, _ := RegisterCoupon(email, desc, 7, fixedTimeProvider)
 
 		if c.Id() == "" {
 			t.Errorf("expected non empty id but received %q", c.Id())
@@ -75,8 +74,8 @@ func TestRegisterCoupon(t *testing.T) {
 			t.Errorf("expected %q but received %q", email.address, c.Email())
 		}
 
-		if c.Code() != code {
-			t.Errorf("expected %q but received %q", code, c.Code())
+		if c.Code() == "" {
+			t.Errorf("expected non empty code but received %q", c.Code())
 		}
 
 		if c.Description() != desc.value {

@@ -10,7 +10,7 @@ const DefaultCouponExpirationDays = 7
 type coupon struct {
 	id          *couponId
 	email       *email
-	code        string
+	code        *code
 	description *description
 	status      status
 }
@@ -18,7 +18,7 @@ type coupon struct {
 func New(
 	id *couponId,
 	email *email,
-	code string,
+	code *code,
 	description *description,
 	status status,
 ) *coupon {
@@ -33,7 +33,6 @@ func New(
 
 func RegisterCoupon(
 	email *email,
-	code string,
 	description *description,
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
@@ -56,7 +55,7 @@ func RegisterCoupon(
 	c := &coupon{
 		id:          CreateCouponId(),
 		email:       email,
-		code:        code,
+		code:        CreateCode(),
 		description: description,
 		status:      CreateActiveStatus(expirationInDays, timeProvider),
 	}
@@ -73,7 +72,7 @@ func (c coupon) Email() string {
 }
 
 func (c coupon) Code() string {
-	return c.code
+	return c.code.Value()
 }
 
 func (c coupon) Description() string {
