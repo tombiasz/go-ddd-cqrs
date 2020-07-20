@@ -1,7 +1,7 @@
 package coupon
 
 import (
-	"go-coupons/src/domain"
+	"go-coupons/src/app/coupons/domain"
 	"time"
 )
 

@@ -1,6 +1,6 @@
 package coupon
 
-import "go-coupons/src/domain"
+import "go-coupons/src/app/coupons/domain"
 
 var DescriptionCannotBeEmptyErr = domain.NewDomainError("description", "description cannot be empty")
 

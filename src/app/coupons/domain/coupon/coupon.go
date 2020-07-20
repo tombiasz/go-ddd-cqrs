@@ -2,7 +2,7 @@ package coupon
 
 import (
 	"fmt"
-	"go-coupons/src/domain"
+	"go-coupons/src/app/coupons/domain"
 )
 
 const DefaultCouponExpirationDays = 7
