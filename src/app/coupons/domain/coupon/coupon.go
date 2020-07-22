@@ -7,7 +7,7 @@ import (
 
 const DefaultCouponExpirationDays = 7
 
-type coupon struct {
+type Coupon struct {
 	id          *couponId
 	email       *email
 	code        *code
@@ -21,8 +21,8 @@ func New(
 	code *code,
 	description *description,
 	status status,
-) *coupon {
-	return &coupon{
+) *Coupon {
+	return &Coupon{
 		id,
 		email,
 		code,
@@ -36,7 +36,7 @@ func RegisterCoupon(
 	description string,
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
-) (*coupon, domain.DomainErrors) {
+) (*Coupon, domain.DomainErrors) {
 	_email, emailErr := CreateEmail(email)
 	desc, descErr := CreateDescription(description)
 
@@ -46,7 +46,7 @@ func RegisterCoupon(
 		return nil, err
 	}
 
-	c := &coupon{
+	c := &Coupon{
 		id:          GenerateCouponId(),
 		email:       _email,
 		code:        GenerateCode(),
@@ -57,26 +57,26 @@ func RegisterCoupon(
 	return c, nil
 }
 
-func (c coupon) Id() string {
+func (c Coupon) Id() string {
 	return c.id.Value()
 }
 
-func (c coupon) Email() string {
+func (c Coupon) Email() string {
 	return c.email.address
 }
 
-func (c coupon) Code() string {
+func (c Coupon) Code() string {
 	return c.code.Value()
 }
 
-func (c coupon) Description() string {
+func (c Coupon) Description() string {
 	return c.description.value
 }
 
-func (c coupon) Status() string {
+func (c Coupon) Status() string {
 	return c.status.Status()
 }
 
-func (c coupon) String() string {
+func (c Coupon) String() string {
 	return fmt.Sprintf("<Coupon: %s %s (%s)>", c.email, c.code, c.id)
 }
