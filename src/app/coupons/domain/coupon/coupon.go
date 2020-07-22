@@ -32,31 +32,25 @@ func New(
 }
 
 func RegisterCoupon(
-	email *email,
-	description *description,
+	email string,
+	description string,
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
 ) (*coupon, domain.DomainErrors) {
-	var emailErr *domain.DomainError
-	if email == nil {
-		emailErr = EmailCannotBeNilErr
-	}
-
-	var descErr *domain.DomainError
-	if description == nil {
-		descErr = DescriptionCannotBeNilErr
-	}
+	_email, emailErr := CreateEmail(email)
+	desc, descErr := CreateDescription(description)
 
 	err := domain.CombineDomainErrors(emailErr, descErr)
+
 	if err != nil {
 		return nil, err
 	}
 
 	c := &coupon{
 		id:          GenerateCouponId(),
-		email:       email,
+		email:       _email,
 		code:        GenerateCode(),
-		description: description,
+		description: desc,
 		status:      CreateActiveStatus(expirationInDays, timeProvider),
 	}
 

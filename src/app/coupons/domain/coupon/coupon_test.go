@@ -11,48 +11,48 @@ func TestRegisterCoupon(t *testing.T) {
 	var fakeNow = time.Now()
 	var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
 
-	t.Run("returns error when nil was passed as email", func(t *testing.T) {
-		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
+	t.Run("returns error when invalid email was passed ", func(t *testing.T) {
+		var desc = "Lorem ipsum dolor sit amet."
 
-		_, err := RegisterCoupon(nil, desc, 7, fixedTimeProvider)
+		_, err := RegisterCoupon("", desc, 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
 		}
 
-		found := lookupError(t, err, EmailCannotBeNilErr)
+		found := lookupError(t, err, EmailCannotBeEmptyErr)
 		if !found {
-			t.Errorf("expected %q error but did not received one", EmailCannotBeNilErr)
+			t.Errorf("expected %q error but did not received one", EmailCannotBeEmptyErr)
 		}
 	})
 
-	t.Run("returns error when nil was passed as description", func(t *testing.T) {
-		var email, _ = CreateEmail("foo@bar.com")
+	t.Run("returns error when invalid value was passed as description", func(t *testing.T) {
+		var email = "foo@bar.com"
 
-		_, err := RegisterCoupon(email, nil, 7, fixedTimeProvider)
+		_, err := RegisterCoupon(email, "", 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
 		}
 
-		found := lookupError(t, err, DescriptionCannotBeNilErr)
+		found := lookupError(t, err, DescriptionCannotBeEmptyErr)
 		if !found {
 			t.Errorf("expected %q error but did not received one", DescriptionCannotBeEmptyErr)
 		}
 	})
 
-	t.Run("returns both errors when nil was passed as email and description", func(t *testing.T) {
-		_, err := RegisterCoupon(nil, nil, 7, fixedTimeProvider)
+	t.Run("returns both errors when invalid value was passed as email and description", func(t *testing.T) {
+		_, err := RegisterCoupon("", "", 7, fixedTimeProvider)
 
 		if err == nil {
 			t.Errorf("expected errors but did not received any")
 		}
 
-		var foundEmailErr = lookupError(t, err, EmailCannotBeNilErr)
-		var foundDescErr = lookupError(t, err, DescriptionCannotBeNilErr)
+		var foundEmailErr = lookupError(t, err, EmailCannotBeEmptyErr)
+		var foundDescErr = lookupError(t, err, DescriptionCannotBeEmptyErr)
 
 		if !foundEmailErr {
-			t.Errorf("expected %q error but did not received one", EmailCannotBeNilErr)
+			t.Errorf("expected %q error but did not received one", EmailCannotBeEmptyErr)
 		}
 
 		if !foundDescErr {
@@ -61,8 +61,8 @@ func TestRegisterCoupon(t *testing.T) {
 	})
 
 	t.Run("registers a new coupon", func(t *testing.T) {
-		var email, _ = CreateEmail("foo@bar.com")
-		var desc, _ = CreateDescription("Lorem ipsum dolor sit amet.")
+		var email = "foo@bar.com"
+		var desc = "Lorem ipsum dolor sit amet."
 
 		c, _ := RegisterCoupon(email, desc, 7, fixedTimeProvider)
 
@@ -70,16 +70,16 @@ func TestRegisterCoupon(t *testing.T) {
 			t.Errorf("expected non empty id but received %q", c.Id())
 		}
 
-		if c.Email() != email.address {
-			t.Errorf("expected %q but received %q", email.address, c.Email())
+		if c.Email() != email {
+			t.Errorf("expected %q but received %q", email, c.Email())
 		}
 
 		if c.Code() == "" {
 			t.Errorf("expected non empty code but received %q", c.Code())
 		}
 
-		if c.Description() != desc.value {
-			t.Errorf("expected %q but received %q", desc.value, c.Description())
+		if c.Description() != desc {
+			t.Errorf("expected %q but received %q", desc, c.Description())
 		}
 
 		if c.Status() != ActiveStatus {
