@@ -9,13 +9,10 @@ import (
 )
 
 type FakeRepo struct {
-	// Objects []*coupon.Coupon
 	onSave func(*coupon.Coupon) *domain.DomainError
 }
 
 func (r *FakeRepo) Save(coupon *coupon.Coupon) *domain.DomainError {
-	// r.Objects = append(r.Objects, coupon)
-	// return nil
 	return r.onSave(coupon)
 }
 
