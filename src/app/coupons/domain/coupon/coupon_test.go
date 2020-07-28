@@ -88,6 +88,49 @@ func TestRegisterCoupon(t *testing.T) {
 	})
 }
 
+func TestCouponUse(t *testing.T) {
+	var fakeNow = time.Now()
+	var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
+
+	t.Run("marks coupon as used", func(t *testing.T) {
+		var email = "foo@bar.com"
+		var desc = "Lorem ipsum"
+
+		c, _ := RegisterCoupon(email, desc, 7, fixedTimeProvider)
+
+		c.Use(fixedTimeProvider)
+
+		if c.Status() != UsedStatus {
+			t.Errorf("expected %q but received %q", UsedStatus, c.Status())
+		}
+
+		s := c.status.(*usedStatus)
+
+		if !s.usedAt.Equal(fakeNow) {
+			t.Errorf("expected %q but received %q", UsedStatus, c.Status())
+		}
+	})
+
+	t.Run("coupon can only be used once", func(t *testing.T) {
+		var email = "foo@bar.com"
+		var desc = "Lorem ipsum"
+
+		c, _ := RegisterCoupon(email, desc, 7, fixedTimeProvider)
+
+		err := c.Use(fixedTimeProvider)
+
+		if err != nil {
+			t.Errorf("did not expect an err but received one %q", err)
+		}
+
+		err = c.Use(fixedTimeProvider)
+
+		if err != CouponAlreadyUsedErr {
+			t.Errorf("expected %q but received %q", CouponAlreadyUsedErr, err)
+		}
+	})
+}
+
 func lookupError(t *testing.T, errs domain.DomainErrors, err error) bool {
 	t.Helper()
 

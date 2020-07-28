@@ -57,26 +57,40 @@ func RegisterCoupon(
 	return c, nil
 }
 
-func (c Coupon) Id() string {
+func (c *Coupon) canBeUsed() bool {
+	return c.status.Status() == ActiveStatus
+}
+
+func (c *Coupon) Use(timeProvider domain.TimeProvider) *domain.DomainError {
+	if !c.canBeUsed() {
+		return CouponAlreadyUsedErr
+	}
+
+	c.status = c.status.(*activeStatus).Use(timeProvider)
+
+	return nil
+}
+
+func (c *Coupon) Id() string {
 	return c.id.Value()
 }
 
-func (c Coupon) Email() string {
+func (c *Coupon) Email() string {
 	return c.email.address
 }
 
-func (c Coupon) Code() string {
+func (c *Coupon) Code() string {
 	return c.code.Value()
 }
 
-func (c Coupon) Description() string {
+func (c *Coupon) Description() string {
 	return c.description.value
 }
 
-func (c Coupon) Status() string {
+func (c *Coupon) Status() string {
 	return c.status.Status()
 }
 
-func (c Coupon) String() string {
+func (c *Coupon) String() string {
 	return fmt.Sprintf("<Coupon: %s %s (%s)>", c.email, c.code, c.id)
 }
