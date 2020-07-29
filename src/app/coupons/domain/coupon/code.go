@@ -4,22 +4,29 @@ import (
 	"fmt"
 
 	"github.com/teris-io/shortid"
+
+	"go-coupons/src/app/coupons/domain"
 )
 
-type code struct {
+type Code struct {
 	value string
 }
 
-func GenerateCode() *code {
-	var c = shortid.MustGenerate()
-
-	return &code{c}
+// TODO: add validation + tests
+func NewCode(c string) (*Code, *domain.DomainError) {
+	return &Code{c}, nil
 }
 
-func (c *code) Value() string {
+func GenerateCode() *Code {
+	var c = shortid.MustGenerate()
+
+	return &Code{c}
+}
+
+func (c *Code) Value() string {
 	return c.value
 }
 
-func (c *code) String() string {
+func (c *Code) String() string {
 	return fmt.Sprintf("<Code: %s >", c.value)
 }

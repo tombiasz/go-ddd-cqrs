@@ -9,16 +9,16 @@ const DefaultCouponExpirationDays = 7
 
 type Coupon struct {
 	id          *couponId
-	email       *email
-	code        *code
+	email       *Email
+	code        *Code
 	description *description
 	status      status
 }
 
 func New(
 	id *couponId,
-	email *email,
-	code *code,
+	email *Email,
+	code *Code,
 	description *description,
 	status status,
 ) *Coupon {

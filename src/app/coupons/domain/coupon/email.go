@@ -2,11 +2,11 @@ package coupon
 
 import "go-coupons/src/app/coupons/domain"
 
-type email struct {
+type Email struct {
 	address string
 }
 
-func NewEmail(address string) (*email, *domain.DomainError) {
+func NewEmail(address string) (*Email, *domain.DomainError) {
 	if address == "" {
 		return nil, EmailCannotBeEmptyErr
 	}
@@ -15,5 +15,5 @@ func NewEmail(address string) (*email, *domain.DomainError) {
 		return nil, EmailIsInvalidErr
 	}
 
-	return &email{address}, nil
+	return &Email{address}, nil
 }
