@@ -28,20 +28,19 @@ func (h *UseCouponCommandHandler) Execute(cmd *UseCouponCommand) domain.DomainEr
 	coupon, repoErr := h.Repository.GetCouponByEmailAndCode(email, code)
 
 	if repoErr != nil {
-		return domain.CombineDomainErrors(repoErr)
+		return repoErr.AsDomainErrors()
 	}
 
 	domainErr := coupon.Use(h.TimeProvider)
 
 	if domainErr != nil {
-		return domain.CombineDomainErrors(domainErr)
+		return domainErr.AsDomainErrors()
 	}
 
 	repoErr = h.Repository.Save(coupon)
 
 	if repoErr != nil {
-		// TODO: single err as array? blah
-		return domain.CombineDomainErrors(repoErr)
+		return repoErr.AsDomainErrors()
 	}
 
 	return nil

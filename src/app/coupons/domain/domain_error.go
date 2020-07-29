@@ -12,8 +12,12 @@ type DomainError struct {
 
 type DomainErrors []*DomainError
 
-func (e DomainError) Error() string {
+func (e *DomainError) Error() string {
 	return fmt.Sprintf("DomainError - %s - %s", e.Property, e.Message)
+}
+
+func (e *DomainError) AsDomainErrors() DomainErrors {
+	return CombineDomainErrors(e)
 }
 
 func NewDomainError(property, message string) *DomainError {

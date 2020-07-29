@@ -30,8 +30,7 @@ func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) domai
 	dbErr := h.Repository.Save(coupon)
 
 	if dbErr != nil {
-		// TODO: single err as array? blah
-		return domain.CombineDomainErrors(dbErr)
+		return dbErr.AsDomainErrors()
 	}
 
 	return nil
