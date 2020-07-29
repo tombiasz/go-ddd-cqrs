@@ -15,3 +15,7 @@ var EmailIsInvalidErr = domain.NewDomainError("email", "email address is invalid
 var EmailCannotBeNilErr = domain.NewDomainError("email", "email address cannot be nil")
 
 var CouponAlreadyUsedErr = domain.NewDomainError("coupon", "coupon already been used")
+
+var CodeCannotBeEmptyErr = domain.NewDomainError("code", "code cannot be empty")
+
+var CodeIsInvalidErr = domain.NewDomainError("code", "code is invalid")

@@ -12,9 +12,16 @@ type Code struct {
 	value string
 }
 
-// TODO: add validation + tests
-func NewCode(c string) (*Code, *domain.DomainError) {
-	return &Code{c}, nil
+func NewCode(code string) (*Code, *domain.DomainError) {
+	if code == "" {
+		return nil, CodeCannotBeEmptyErr
+	}
+
+	if len(code) < 8 || len(code) > 11 {
+		return nil, CodeIsInvalidErr
+	}
+
+	return &Code{code}, nil
 }
 
 func GenerateCode() *Code {
