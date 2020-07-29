@@ -10,10 +10,16 @@ import (
 
 type FakeRepo struct {
 	onSave func(*coupon.Coupon) *domain.DomainError
+
+	onGetCouponByEmailAndCode func(*coupon.Email, *coupon.Code) (*coupon.Coupon, *domain.DomainError)
 }
 
 func (r *FakeRepo) Save(coupon *coupon.Coupon) *domain.DomainError {
 	return r.onSave(coupon)
+}
+
+func (r *FakeRepo) GetCouponByEmailAndCode(email *coupon.Email, code *coupon.Code) (*coupon.Coupon, *domain.DomainError) {
+	return r.onGetCouponByEmailAndCode(email, code)
 }
 
 func TestRegisterCouponCommandHandler(t *testing.T) {
@@ -67,7 +73,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			return nil
 		}
 
-		var fakeRepo = &FakeRepo{onSave}
+		var fakeRepo = &FakeRepo{onSave, nil}
 
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
@@ -93,7 +99,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			return repoFailure
 		}
 
-		var fakeRepo = &FakeRepo{onSave}
+		var fakeRepo = &FakeRepo{onSave, nil}
 
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
