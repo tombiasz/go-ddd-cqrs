@@ -2,6 +2,7 @@ package coupon
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/teris-io/shortid"
 
@@ -31,7 +32,7 @@ func GenerateCode() *Code {
 }
 
 func (c *Code) Value() string {
-	return c.value
+	return strings.ToLower(c.value)
 }
 
 func (c *Code) String() string {

@@ -41,3 +41,16 @@ func TestNewCode(t *testing.T) {
 		}
 	})
 }
+
+func TestCodeValue(t *testing.T) {
+	t.Run("returns value as lower case string", func(t *testing.T) {
+		var input = "AABBccDDee"
+		var expected = "aabbccddee"
+
+		code, _ := NewCode(input)
+
+		if code.Value() != expected {
+			t.Errorf("got %q, want %q", input, expected)
+		}
+	})
+}
