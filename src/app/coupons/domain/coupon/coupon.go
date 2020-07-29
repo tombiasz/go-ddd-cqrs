@@ -37,7 +37,7 @@ func RegisterCoupon(
 	expirationInDays uint8,
 	timeProvider domain.TimeProvider,
 ) (*Coupon, domain.DomainErrors) {
-	_email, emailErr := CreateEmail(email)
+	_email, emailErr := NewEmail(email)
 	desc, descErr := CreateDescription(description)
 
 	err := domain.CombineDomainErrors(emailErr, descErr)
