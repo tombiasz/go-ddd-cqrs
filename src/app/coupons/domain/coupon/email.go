@@ -1,6 +1,9 @@
 package coupon
 
-import "go-coupons/src/app/coupons/domain"
+import (
+	"go-coupons/src/app/coupons/domain"
+	"strings"
+)
 
 type Email struct {
 	address string
@@ -16,4 +19,8 @@ func NewEmail(address string) (*Email, *domain.DomainError) {
 	}
 
 	return &Email{address}, nil
+}
+
+func (e *Email) Address() string {
+	return strings.ToLower(e.address)
 }

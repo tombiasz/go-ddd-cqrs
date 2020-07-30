@@ -41,3 +41,16 @@ func TestNewEmail(t *testing.T) {
 		}
 	})
 }
+
+func TestEmailAddress(t *testing.T) {
+	t.Run("returns email address as lower case string", func(t *testing.T) {
+		var input = "FOO@bar.com"
+		var expected = "foo@bar.com"
+
+		e, _ := NewEmail(input)
+
+		if e.Address() != expected {
+			t.Errorf("got %q, want %q", input, expected)
+		}
+	})
+}
