@@ -19,3 +19,5 @@ var CouponAlreadyUsedErr = domain.NewDomainError("coupon", "coupon already been 
 var CodeCannotBeEmptyErr = domain.NewDomainError("code", "code cannot be empty")
 
 var CodeIsInvalidErr = domain.NewDomainError("code", "code is invalid")
+
+var CouponDoesNotExpiredErr = domain.NewDomainError("status", "coupon has not expired yet")

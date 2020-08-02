@@ -51,10 +51,10 @@ func TestActiveStatusUse(t *testing.T) {
 func TestActiveStatusExpire(t *testing.T) {
 	t.Run("expiring active status should return expired status", func(t *testing.T) {
 		const expiresInDays = 7
-		var fakeNow = time.Now()
-		var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
+		var past = time.Now().AddDate(0, 0, -1*expiresInDays).Add(-1 * time.Second)
+		var pastTimeProvider = &timeutils.FixedTimeProvider{past}
 
-		a := CreateActiveStatus(expiresInDays, fixedTimeProvider)
+		a := CreateActiveStatus(expiresInDays, pastTimeProvider)
 
 		e := a.Expire()
 
@@ -62,7 +62,7 @@ func TestActiveStatusExpire(t *testing.T) {
 			t.Errorf("got %q, want %q", e.Status(), UsedStatus)
 		}
 
-		var expectedTime = fakeNow.AddDate(0, 0, expiresInDays)
+		var expectedTime = past.AddDate(0, 0, expiresInDays)
 		if !e.expiredAt.Equal(expectedTime) {
 			t.Errorf("got %q, want %q", e.expiredAt, expectedTime)
 		}
