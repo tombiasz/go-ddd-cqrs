@@ -29,6 +29,13 @@ func (s *activeStatus) Status() string {
 	return ActiveStatus
 }
 
+func (s *activeStatus) isExpired(timeProvider domain.TimeProvider) bool {
+	var expiresAt = s.activatedAt.AddDate(0, 0, int(s.expiresInDays))
+	var now = timeProvider.Now()
+
+	return now.After(expiresAt)
+}
+
 func (s *activeStatus) Expire() *expiredStatus {
 	var expiredAt = s.activatedAt.AddDate(0, 0, int(s.expiresInDays))
 

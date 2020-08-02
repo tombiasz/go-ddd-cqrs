@@ -68,3 +68,35 @@ func TestActiveStatusExpire(t *testing.T) {
 		}
 	})
 }
+
+func TestActiveStatusIsExpired(t *testing.T) {
+	t.Run("return true if active status expired", func(t *testing.T) {
+		const expiresInDays = 7
+		var now = time.Now()
+		var past = now.AddDate(0, 0, -1*expiresInDays).Add(-1 * time.Second)
+		var pastTimeProvider = &timeutils.FixedTimeProvider{past}
+		var nowTimeProvider = &timeutils.FixedTimeProvider{now}
+
+		a := CreateActiveStatus(expiresInDays, pastTimeProvider)
+
+		isExpired := a.isExpired(nowTimeProvider)
+
+		if !isExpired {
+			t.Errorf("expected status to be expire but it did not")
+		}
+	})
+
+	t.Run("return false if active status not yet expired", func(t *testing.T) {
+		const expiresInDays = 7
+		var now = time.Now()
+		var nowTimeProvider = &timeutils.FixedTimeProvider{now}
+
+		a := CreateActiveStatus(expiresInDays, nowTimeProvider)
+
+		isExpired := a.isExpired(nowTimeProvider)
+
+		if isExpired {
+			t.Errorf("expected status to not expire but it did")
+		}
+	})
+}
