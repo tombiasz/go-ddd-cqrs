@@ -71,6 +71,26 @@ func (c *Coupon) Use(timeProvider domain.TimeProvider) *domain.DomainError {
 	return nil
 }
 
+func (c *Coupon) canBeMarkedAsExpired(timeProvider domain.TimeProvider) bool {
+	isActive := c.status.Status() == ActiveStatus
+
+	if !isActive {
+		return false
+	}
+
+	return c.status.(*activeStatus).isExpired(timeProvider)
+}
+
+func (c *Coupon) Expire(timeProvider domain.TimeProvider) *domain.DomainError {
+	if !c.canBeMarkedAsExpired(timeProvider) {
+		return CouponCannotBeNotExpiredErr
+	}
+
+	c.status = c.status.(*activeStatus).Expire()
+
+	return nil
+}
+
 func (c *Coupon) Id() string {
 	return c.id.Value()
 }

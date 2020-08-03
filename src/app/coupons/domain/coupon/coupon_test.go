@@ -131,6 +131,48 @@ func TestCouponUse(t *testing.T) {
 	})
 }
 
+func TestCouponExpire(t *testing.T) {
+	t.Run("marks coupon as expired", func(t *testing.T) {
+		const expiresInDays = 7
+		var now = time.Now()
+		var past = now.AddDate(0, 0, -1*expiresInDays).Add(-1 * time.Second)
+		var pastTimeProvider = &timeutils.FixedTimeProvider{past}
+		var nowTimeProvider = &timeutils.FixedTimeProvider{now}
+		var email = "foo@bar.com"
+		var desc = "Lorem ipsum"
+
+		c, _ := RegisterCoupon(email, desc, expiresInDays, pastTimeProvider)
+
+		c.Expire(nowTimeProvider)
+
+		if c.Status() != ExpiredStatus {
+			t.Errorf("expected %q but received %q", ExpiredStatus, c.Status())
+		}
+
+		s := c.status.(*expiredStatus)
+
+		if !s.expiredAt.Equal(now.Add(-1 * time.Second)) {
+			t.Errorf("expected %q but received %q", s.expiredAt, now.Add(-1*time.Second))
+			t.Errorf("expected %q but received %q", ExpiredStatus, c.Status())
+		}
+	})
+
+	t.Run("coupon can only be expired after proper time period", func(t *testing.T) {
+		var now = time.Now()
+		var fixedTimeProvider = &timeutils.FixedTimeProvider{now}
+		var email = "foo@bar.com"
+		var desc = "Lorem ipsum"
+
+		c, _ := RegisterCoupon(email, desc, 7, fixedTimeProvider)
+
+		err := c.Expire(fixedTimeProvider)
+
+		if err != CouponCannotBeNotExpiredErr {
+			t.Errorf("expected %q but received %q", CouponCannotBeNotExpiredErr, err)
+		}
+	})
+}
+
 func lookupError(t *testing.T, errs domain.DomainErrors, err error) bool {
 	t.Helper()
 
