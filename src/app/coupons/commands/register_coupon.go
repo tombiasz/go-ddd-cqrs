@@ -33,5 +33,6 @@ func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) domai
 		return dbErr.AsDomainErrors()
 	}
 
+	// TODO: return coupon dto
 	return nil
 }

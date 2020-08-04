@@ -70,8 +70,9 @@ func TestUseCouponCommand(t *testing.T) {
 		}
 
 		var fakeRepo = &FakeRepo{
-			onSave,
-			onGetCouponByEmailAndCode,
+			onSave:                    onSave,
+			onGetCouponByEmailAndCode: onGetCouponByEmailAndCode,
+			onGetExpiredCoupons:       nil,
 		}
 
 		var handler = &UseCouponCommandHandler{
@@ -108,8 +109,9 @@ func TestUseCouponCommand(t *testing.T) {
 		}
 
 		var fakeRepo = &FakeRepo{
-			onSave,
-			onGetCouponByEmailAndCode,
+			onSave:                    onSave,
+			onGetCouponByEmailAndCode: onGetCouponByEmailAndCode,
+			onGetExpiredCoupons:       nil,
 		}
 
 		var handler = &UseCouponCommandHandler{
@@ -146,6 +148,7 @@ func TestUseCouponCommand(t *testing.T) {
 		var fakeRepo = &FakeRepo{
 			onSave:                    nil,
 			onGetCouponByEmailAndCode: onGetCouponByEmailAndCode,
+			onGetExpiredCoupons:       nil,
 		}
 
 		var handler = &UseCouponCommandHandler{

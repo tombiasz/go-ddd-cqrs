@@ -12,6 +12,8 @@ type FakeRepo struct {
 	onSave func(*coupon.Coupon) *domain.DomainError
 
 	onGetCouponByEmailAndCode func(*coupon.Email, *coupon.Code) (*coupon.Coupon, *domain.DomainError)
+
+	onGetExpiredCoupons func() ([]*coupon.Coupon, *domain.DomainError)
 }
 
 func (r *FakeRepo) Save(coupon *coupon.Coupon) *domain.DomainError {
@@ -21,7 +23,9 @@ func (r *FakeRepo) Save(coupon *coupon.Coupon) *domain.DomainError {
 func (r *FakeRepo) GetCouponByEmailAndCode(email *coupon.Email, code *coupon.Code) (*coupon.Coupon, *domain.DomainError) {
 	return r.onGetCouponByEmailAndCode(email, code)
 }
-
+func (r *FakeRepo) GetExpiredCoupons() ([]*coupon.Coupon, *domain.DomainError) {
+	return r.onGetExpiredCoupons()
+}
 func TestRegisterCouponCommandHandler(t *testing.T) {
 	var fakeNow = time.Now()
 	var fixedTimeProvider = &timeutils.FixedTimeProvider{fakeNow}
@@ -73,7 +77,11 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			return nil
 		}
 
-		var fakeRepo = &FakeRepo{onSave, nil}
+		var fakeRepo = &FakeRepo{
+			onSave:                    onSave,
+			onGetCouponByEmailAndCode: nil,
+			onGetExpiredCoupons:       nil,
+		}
 
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
@@ -99,7 +107,11 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			return repoFailure
 		}
 
-		var fakeRepo = &FakeRepo{onSave, nil}
+		var fakeRepo = &FakeRepo{
+			onSave:                    onSave,
+			onGetCouponByEmailAndCode: nil,
+			onGetExpiredCoupons:       nil,
+		}
 
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
