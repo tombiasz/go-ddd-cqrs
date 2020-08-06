@@ -1,22 +1,37 @@
 package main
 
 import (
+	"encoding/json"
+	"go-coupons/src/http/middlewares"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi"
 )
 
+type IndexResponse struct {
+	Msg string `json:"msg"`
+}
+
 func HandleIndex(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Length", "12")
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Write([]byte("Hello World!"))
+	var response = &IndexResponse{"Hello World!"}
+
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func NewRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.MethodFunc("GET", "/", HandleIndex)
+	r.Use(middlewares.ContentTypeJson)
+
+	r.Route("/api/v1", func(r chi.Router) {
+
+		r.MethodFunc("GET", "/", HandleIndex)
+	})
+
 	return r
 }
 
