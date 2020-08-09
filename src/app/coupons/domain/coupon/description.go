@@ -6,11 +6,7 @@ type description struct {
 	value string
 }
 
-func newDescription(value string) *description {
-	return &description{value}
-}
-
-func CreateDescription(value string) (*description, *domain.DomainError) {
+func NewDescription(value string) (*description, *domain.DomainError) {
 	if value == "" {
 		return nil, DescriptionCannotBeEmptyErr
 	}
