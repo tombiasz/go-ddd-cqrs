@@ -18,6 +18,10 @@ type activeStatus struct {
 	expiresInDays uint8
 }
 
+func NewActiveStatus(activatedAt time.Time, expiresInDays uint8) *activeStatus {
+	return &activeStatus{activatedAt, expiresInDays}
+}
+
 func CreateActiveStatus(expiresInDays uint8, timeProvider domain.TimeProvider) *activeStatus {
 	return &activeStatus{
 		activatedAt:   timeProvider.Now(),
@@ -52,12 +56,20 @@ type expiredStatus struct {
 	expiredAt time.Time
 }
 
+func NewExpiredStatus(expiredAt time.Time) *expiredStatus {
+	return &expiredStatus{expiredAt}
+}
+
 func (s *expiredStatus) Status() string {
 	return ExpiredStatus
 }
 
 type usedStatus struct {
 	usedAt time.Time
+}
+
+func NewUsedStatus(usedAt time.Time) *usedStatus {
+	return &usedStatus{usedAt}
 }
 
 func (s *usedStatus) Status() string {
