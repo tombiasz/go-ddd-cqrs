@@ -112,5 +112,5 @@ func (c *Coupon) Status() string {
 }
 
 func (c *Coupon) String() string {
-	return fmt.Sprintf("<Coupon: %s %s (%s)>", c.email, c.code, c.id)
+	return fmt.Sprintf("Coupon: {\n\tid: %s\n\temail: %s\n\tcode: %s\n\tstatus: %s\n}\n", c.id.value, c.email.address, c.code.value, c.status.Status())
 }
