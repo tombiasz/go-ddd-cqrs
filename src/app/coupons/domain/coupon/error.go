@@ -21,3 +21,5 @@ var CodeCannotBeEmptyErr = domain.NewDomainError("code", "code cannot be empty")
 var CodeIsInvalidErr = domain.NewDomainError("code", "code is invalid")
 
 var CouponCannotBeNotExpiredErr = domain.NewDomainError("status", "coupon cannot be marked as expired")
+
+var CouponIdIsInvalidErr = domain.NewDomainError("couponId", "coupon id is invalid")
