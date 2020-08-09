@@ -12,7 +12,7 @@ type Coupon struct {
 	email       *Email
 	code        *Code
 	description *description
-	status      status
+	status      Status
 }
 
 func New(
@@ -20,7 +20,7 @@ func New(
 	email *Email,
 	code *Code,
 	description *description,
-	status status,
+	status Status,
 ) *Coupon {
 	return &Coupon{
 		id,
