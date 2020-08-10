@@ -7,17 +7,10 @@ import (
 	"go-coupons/src/app/coupons/domain/coupon"
 	"os"
 	"time"
-
-	"github.com/jackc/pgx/v4"
 )
 
 func main() {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
+	conn := NewDbConnection(os.Getenv("DATABASE_URL"))
 	defer conn.Close(context.Background())
 
 	rows, err := conn.Query(
