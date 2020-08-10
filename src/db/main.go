@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"go-coupons/src/app/coupons/domain"
 	"go-coupons/src/app/coupons/domain/coupon"
+	dbcoupon "go-coupons/src/db/coupons"
 	"os"
-	"time"
 )
 
 func main() {
@@ -26,13 +26,10 @@ func main() {
 	}
 
 	for rows.Next() {
+		var m dbcoupon.CouponModel
 
-		var couponIdRaw, codeRaw, emailRaw, descRaw, statusRaw string
-		var expdaysRaw uint8
-		var activatedAtRaw, expiredAtRaw, usedAtRaw *time.Time
-
-		err := rows.Scan(&couponIdRaw, &codeRaw, &emailRaw, &descRaw,
-			&statusRaw, &expdaysRaw, &activatedAtRaw, &expiredAtRaw, &usedAtRaw,
+		err := rows.Scan(&m.CouponId, &m.Code, &m.Email, &m.Desc,
+			&m.Status, &m.Expdays, &m.ActivatedAt, &m.ExpiredAt, &m.UsedAt,
 		)
 
 		if err != nil {
@@ -40,10 +37,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		couponId, errId := coupon.NewCouponId(couponIdRaw)
-		code, errCode := coupon.NewCode(codeRaw)
-		email, errEmail := coupon.NewEmail(emailRaw)
-		desc, errDesc := coupon.NewDescription(descRaw)
+		couponId, errId := coupon.NewCouponId(m.CouponId)
+		code, errCode := coupon.NewCode(m.Code)
+		email, errEmail := coupon.NewEmail(m.Email)
+		desc, errDesc := coupon.NewDescription(m.Desc)
 
 		errs := domain.CombineDomainErrors(errId, errCode, errEmail, errDesc)
 
@@ -53,13 +50,13 @@ func main() {
 		}
 
 		var status coupon.Status
-		switch statusRaw {
+		switch m.Status {
 		case coupon.ActiveStatus:
-			status = coupon.NewActiveStatus(*activatedAtRaw, expdaysRaw)
+			status = coupon.NewActiveStatus(*m.ActivatedAt, m.Expdays)
 		case coupon.UsedStatus:
-			status = coupon.NewUsedStatus(*usedAtRaw)
+			status = coupon.NewUsedStatus(*m.UsedAt)
 		case coupon.ExpiredStatus:
-			status = coupon.NewExpiredStatus(*expiredAtRaw)
+			status = coupon.NewExpiredStatus(*m.ExpiredAt)
 		}
 
 		coupon := coupon.New(
