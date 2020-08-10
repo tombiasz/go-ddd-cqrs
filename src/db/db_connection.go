@@ -5,15 +5,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func NewDbConnection(dbUrl string) *pgx.Conn {
-	conn, err := pgx.Connect(context.Background(), dbUrl)
+func NewDbConnection(dbUrl string) *pgxpool.Pool {
+	con, err := pgxpool.Connect(context.Background(), dbUrl)
 
 	if err != nil {
 		panic(fmt.Sprintf("Unable to connect to database: %v\n", err))
 	}
 
-	return conn
+	return con
 }

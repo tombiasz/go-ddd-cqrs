@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	conn := NewDbConnection(os.Getenv("DATABASE_URL"))
-	defer conn.Close(context.Background())
+	con := NewDbConnection(os.Getenv("DATABASE_URL"))
+	defer con.Close()
 
-	rows, err := conn.Query(
+	rows, err := con.Query(
 		context.Background(),
 		`select
 			id,  code, email, description, status, expdays, activatedAt, expiredAt, usedAt
