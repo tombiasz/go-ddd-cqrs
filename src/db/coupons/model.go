@@ -5,13 +5,13 @@ import (
 )
 
 type CouponModel struct {
-	CouponId    string
+	Id          string
 	Code        string
 	Email       string
-	Desc        string
+	Description string
 	Status      string
 	Expdays     uint8
-	ActivatedAt *time.Time
+	ActivatedAt time.Time
 	ExpiredAt   *time.Time
 	UsedAt      *time.Time
 }

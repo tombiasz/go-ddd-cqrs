@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"go-coupons/src/app/coupons/domain"
 	"go-coupons/src/app/coupons/domain/coupon"
 	dbcoupon "go-coupons/src/db/coupons"
 	"os"
@@ -28,7 +27,7 @@ func main() {
 	for rows.Next() {
 		var m dbcoupon.CouponModel
 
-		err := rows.Scan(&m.CouponId, &m.Code, &m.Email, &m.Desc,
+		err := rows.Scan(&m.Id, &m.Code, &m.Email, &m.Description,
 			&m.Status, &m.Expdays, &m.ActivatedAt, &m.ExpiredAt, &m.UsedAt,
 		)
 
@@ -37,37 +36,24 @@ func main() {
 			os.Exit(1)
 		}
 
-		couponId, errId := coupon.NewCouponId(m.CouponId)
-		code, errCode := coupon.NewCode(m.Code)
-		email, errEmail := coupon.NewEmail(m.Email)
-		desc, errDesc := coupon.NewDescription(m.Desc)
-
-		errs := domain.CombineDomainErrors(errId, errCode, errEmail, errDesc)
+		c, errs := coupon.New(
+			m.Id,
+			m.Email,
+			m.Code,
+			m.Description,
+			m.Status,
+			m.Expdays,
+			m.ActivatedAt,
+			m.ExpiredAt,
+			m.UsedAt,
+		)
 
 		if errs != nil {
 			fmt.Fprintf(os.Stderr, "Domain errors: %v\n", errs)
 			os.Exit(1)
 		}
 
-		var status coupon.Status
-		switch m.Status {
-		case coupon.ActiveStatus:
-			status = coupon.NewActiveStatus(*m.ActivatedAt, m.Expdays)
-		case coupon.UsedStatus:
-			status = coupon.NewUsedStatus(*m.UsedAt)
-		case coupon.ExpiredStatus:
-			status = coupon.NewExpiredStatus(*m.ExpiredAt)
-		}
-
-		coupon := coupon.New(
-			couponId,
-			email,
-			code,
-			desc,
-			status,
-		)
-
-		fmt.Printf("%s", coupon)
+		fmt.Printf("%s", c)
 	}
 
 }

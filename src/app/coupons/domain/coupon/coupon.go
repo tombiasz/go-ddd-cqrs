@@ -3,6 +3,7 @@ package coupon
 import (
 	"fmt"
 	"go-coupons/src/app/coupons/domain"
+	"time"
 )
 
 const DefaultCouponExpirationDays = 7
@@ -16,19 +17,46 @@ type Coupon struct {
 }
 
 func New(
-	id *couponId,
-	email *Email,
-	code *Code,
-	description *description,
-	status Status,
-) *Coupon {
-	return &Coupon{
-		id,
-		email,
-		code,
-		description,
-		status,
+	id string,
+	email string,
+	code string,
+	description string,
+	status string,
+	expdays uint8,
+	activatedAt time.Time,
+	expiredAt *time.Time,
+	usedAt *time.Time,
+) (*Coupon, domain.DomainErrors) {
+	cId, errId := NewCouponId(id)
+	c, errCode := NewCode(code)
+	e, errEmail := NewEmail(email)
+	d, errDesc := NewDescription(description)
+
+	errs := domain.CombineDomainErrors(errId, errCode, errEmail, errDesc)
+
+	if errs != nil {
+		return nil, errs
 	}
+
+	var s Status
+	switch status {
+	case ActiveStatus:
+		s = NewActiveStatus(activatedAt, expdays)
+	case UsedStatus:
+		s = NewUsedStatus(*usedAt)
+	case ExpiredStatus:
+		s = NewExpiredStatus(*expiredAt)
+	}
+
+	coupon := &Coupon{
+		id:          cId,
+		email:       e,
+		code:        c,
+		description: d,
+		status:      s,
+	}
+
+	return coupon, nil
 }
 
 func RegisterCoupon(
