@@ -139,6 +139,23 @@ func (c *Coupon) Status() string {
 	return c.status.Status()
 }
 
+// TODO: should be moved to coupon
+func (c *Coupon) ExpireInDays() uint8 {
+	return c.status.(*activeStatus).expiresInDays
+}
+
+func (c *Coupon) ActivatedAt() time.Time {
+	return c.status.(*activeStatus).activatedAt
+}
+
+func (c *Coupon) UsedAt() *time.Time {
+	return nil
+}
+
+func (c *Coupon) ExpiredAt() *time.Time {
+	return nil
+}
+
 func (c *Coupon) String() string {
 	return fmt.Sprintf("Coupon: {\n\tid: %s\n\temail: %s\n\tcode: %s\n\tstatus: %s\n}\n", c.id.value, c.email.address, c.code.value, c.status.Status())
 }
