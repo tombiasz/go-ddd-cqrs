@@ -11,67 +11,160 @@ const UsedStatus = "Used"
 
 type Status interface {
 	Status() string
+	ActivatedAt() time.Time
+	ExpiredAt() *time.Time
+	UsedAt() *time.Time
+	ExpiresInDays() uint8
+	IsActive() bool
+	IsUsed() bool
+	IsExpired(tp domain.TimeProvider) bool
+	Expire(tp domain.TimeProvider) Status
+	Use(tp domain.TimeProvider) Status
 }
 
-type activeStatus struct {
-	activatedAt   time.Time
+type status struct {
+	status        string
 	expiresInDays uint8
+	activatedAt   time.Time
+	expiredAt     *time.Time
+	usedAt        *time.Time
 }
 
-func NewActiveStatus(activatedAt time.Time, expiresInDays uint8) *activeStatus {
-	return &activeStatus{activatedAt, expiresInDays}
+func (s *status) Status() string {
+	return s.status
 }
 
-func CreateActiveStatus(expiresInDays uint8, timeProvider domain.TimeProvider) *activeStatus {
-	return &activeStatus{
-		activatedAt:   timeProvider.Now(),
-		expiresInDays: expiresInDays,
+func (s *status) ExpiresInDays() uint8 {
+	return s.expiresInDays
+}
+
+func (s *status) ActivatedAt() time.Time {
+	return s.activatedAt
+}
+
+func (s *status) ExpiredAt() *time.Time {
+	return s.expiredAt
+}
+
+func (s *status) UsedAt() *time.Time {
+	return s.usedAt
+}
+
+func (s *status) IsExpired(timeProvider domain.TimeProvider) bool {
+	if s.expiredAt != nil {
+		return true
 	}
-}
 
-func (s *activeStatus) Status() string {
-	return ActiveStatus
-}
+	if s.IsUsed() {
+		return false
+	}
 
-func (s *activeStatus) isExpired(timeProvider domain.TimeProvider) bool {
-	var expiresAt = s.activatedAt.AddDate(0, 0, int(s.expiresInDays))
 	var now = timeProvider.Now()
+	var expiresAt = s.activatedAt.AddDate(0, 0, int(s.expiresInDays))
 
 	return now.After(expiresAt)
 }
 
-func (s *activeStatus) Expire() *expiredStatus {
-	var expiredAt = s.activatedAt.AddDate(0, 0, int(s.expiresInDays))
-
-	return &expiredStatus{expiredAt}
+func (s *status) IsActive() bool {
+	return s.status == ActiveStatus
 }
 
-func (s *activeStatus) Use(timeProvider domain.TimeProvider) *usedStatus {
-	return &usedStatus{
-		usedAt: timeProvider.Now(),
+func (s *status) IsUsed() bool {
+	return s.status == UsedStatus
+}
+
+func (s *status) Use(tp domain.TimeProvider) Status {
+	if !s.IsActive() {
+		panic("Invalid status state. Only ActiveStatus can be used")
+	}
+
+	now := tp.Now()
+
+	return &status{
+		status:        UsedStatus,
+		expiresInDays: s.expiresInDays,
+		activatedAt:   s.activatedAt,
+		expiredAt:     nil,
+		usedAt:        &now,
 	}
 }
 
-type expiredStatus struct {
-	expiredAt time.Time
+func (s *status) Expire(tp domain.TimeProvider) Status {
+	if !s.IsActive() {
+		panic("Invalid status state. Only ActiveStatus can be expired")
+	}
+
+	now := tp.Now()
+
+	return &status{
+		status:        ExpiredStatus,
+		expiresInDays: s.expiresInDays,
+		activatedAt:   s.activatedAt,
+		expiredAt:     &now,
+		usedAt:        nil,
+	}
 }
 
-func NewExpiredStatus(expiredAt time.Time) *expiredStatus {
-	return &expiredStatus{expiredAt}
+func NewStatus(
+	statusStr string,
+	expiresInDays uint8,
+	activatedAt time.Time,
+	expiredAt *time.Time,
+	usedAt *time.Time,
+) Status {
+	// TODO:
+	// - check that expiredAt and usedAt are not set at the same time
+	return &status{
+		statusStr,
+		expiresInDays,
+		activatedAt,
+		expiredAt,
+		usedAt,
+	}
 }
 
-func (s *expiredStatus) Status() string {
-	return ExpiredStatus
+func NewActiveStatus(expiresInDays uint8, activatedAt time.Time) Status {
+	return &status{
+		status:        ActiveStatus,
+		expiresInDays: expiresInDays,
+		activatedAt:   activatedAt,
+		expiredAt:     nil,
+		usedAt:        nil,
+	}
 }
 
-type usedStatus struct {
-	usedAt time.Time
+func NewExpiredStatus(
+	expiresInDays uint8,
+	activatedAt time.Time,
+	expiredAt time.Time,
+) Status {
+	// TODO:
+	// consider additional validation
+	// activatedAt must be before expiredAt
+	// expiredAt must equal activatedAt + expireInDays
+	return &status{
+		status:        ExpiredStatus,
+		expiresInDays: expiresInDays,
+		activatedAt:   activatedAt,
+		expiredAt:     &expiredAt,
+		usedAt:        nil,
+	}
 }
 
-func NewUsedStatus(usedAt time.Time) *usedStatus {
-	return &usedStatus{usedAt}
-}
-
-func (s *usedStatus) Status() string {
-	return UsedStatus
+func NewUsedStatus(
+	expiresInDays uint8,
+	activatedAt time.Time,
+	usedAt time.Time,
+) Status {
+	// TODO:
+	// consider additional validation
+	// activatedAt must be before usedAt
+	// usedAt must be less than activatedAt + expireInDays
+	return &status{
+		status:        UsedStatus,
+		expiresInDays: expiresInDays,
+		activatedAt:   activatedAt,
+		expiredAt:     nil,
+		usedAt:        &usedAt,
+	}
 }
