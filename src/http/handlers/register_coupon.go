@@ -28,7 +28,8 @@ func RegisterCouponHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		// bad JSON or unrecognized json field
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// http.Error(w, err.Error(), http.StatusBadRequest)
+		JSONError(w, err, http.StatusBadRequest)
 		return
 	}
 
