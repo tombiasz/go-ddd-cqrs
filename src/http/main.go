@@ -100,8 +100,7 @@ type RegisterCouponRequest struct {
 }
 
 type RegisterCouponResponse struct {
-	Email       *string `json:"email`
-	Description *string `json:"description"`
+	Code string `json:"code`
 }
 
 func RegisterCouponHandler(w http.ResponseWriter, r *http.Request) {
@@ -132,18 +131,16 @@ func RegisterCouponHandler(w http.ResponseWriter, r *http.Request) {
 		Description: *req.Description,
 	}
 
-	// TODO: return dto
-	// result, err := handler.Execute(cmd)
-	errDomain := handler.Execute(cmd)
+	result, errDomain := handler.Execute(cmd)
 
 	if errDomain != nil {
 		http.Error(w, errDomain.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// TODO: response
-	// response := GetCouponByIdResponse(result)
-	err = json.NewEncoder(w).Encode("ok")
+	response := RegisterCouponResponse(*result)
+
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"go-coupons/src/app/coupons/domain"
 	"go-coupons/src/app/coupons/domain/coupon"
 	timeutils "go-coupons/src/utils/time"
@@ -23,7 +24,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			Repository:   nil,
 		}
 
-		err := handler.Execute(cmd)
+		_, err := handler.Execute(cmd)
 
 		if err == nil {
 			t.Errorf("expected an error but did not received one")
@@ -41,7 +42,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 		}
 	})
 
-	t.Run("returns nil when coupon is successfully registered", func(t *testing.T) {
+	t.Run("returns result when coupon is successfully registered", func(t *testing.T) {
 		var cmd = &RegisterCouponCommand{
 			Email:       "foo@bar.com",
 			Description: "Lorem ipsum dolor sit amet.",
@@ -70,10 +71,16 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			Repository:   fakeRepo,
 		}
 
-		err := handler.Execute(cmd)
+		result, err := handler.Execute(cmd)
 
 		if err != nil {
 			t.Errorf("expected to not to receive an error but got one")
+		}
+
+		fmt.Println(result.Code)
+
+		if result.Code == "" {
+			t.Errorf("expected non-empty coupon code to be returned")
 		}
 	})
 
@@ -100,7 +107,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			Repository:   fakeRepo,
 		}
 
-		err := handler.Execute(cmd)
+		_, err := handler.Execute(cmd)
 
 		if err == nil {
 			t.Errorf("expected to receive an error but did not get one")

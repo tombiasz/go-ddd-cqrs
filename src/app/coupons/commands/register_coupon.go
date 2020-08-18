@@ -10,12 +10,16 @@ type RegisterCouponCommand struct {
 	Description string
 }
 
+type RegisterCouponCommandResult struct {
+	Code string
+}
+
 type RegisterCouponCommandHandler struct {
 	TimeProvider domain.TimeProvider
 	Repository   coupon.Repository
 }
 
-func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) domain.DomainErrors {
+func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) (*RegisterCouponCommandResult, domain.DomainErrors) {
 	coupon, domainErr := coupon.RegisterCoupon(
 		cmd.Email,
 		cmd.Description,
@@ -24,15 +28,14 @@ func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) domai
 	)
 
 	if domainErr != nil {
-		return domainErr
+		return nil, domainErr
 	}
 
 	dbErr := h.Repository.Save(coupon)
 
 	if dbErr != nil {
-		return dbErr.AsDomainErrors()
+		return nil, dbErr.AsDomainErrors()
 	}
 
-	// TODO: return coupon dto
-	return nil
+	return &RegisterCouponCommandResult{coupon.Code()}, nil
 }
