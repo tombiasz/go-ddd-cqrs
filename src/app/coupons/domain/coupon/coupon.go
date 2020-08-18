@@ -38,15 +38,13 @@ func New(
 		return nil, errs
 	}
 
-	var s Status
-	switch status {
-	case ActiveStatus:
-		s = NewActiveStatus(activatedAt, expdays)
-	case UsedStatus:
-		s = NewUsedStatus(*usedAt)
-	case ExpiredStatus:
-		s = NewExpiredStatus(*expiredAt)
-	}
+	s := NewStatus(
+		status,
+		expdays,
+		activatedAt,
+		expiredAt,
+		usedAt,
+	)
 
 	coupon := &Coupon{
 		id:          cId,
@@ -74,39 +72,40 @@ func RegisterCoupon(
 		return nil, err
 	}
 
+	status := NewActiveStatus(expirationInDays, timeProvider.Now())
+
 	c := &Coupon{
 		id:          GenerateCouponId(),
 		email:       _email,
 		code:        GenerateCode(),
 		description: desc,
-		status:      CreateActiveStatus(expirationInDays, timeProvider),
+		status:      status,
 	}
 
 	return c, nil
 }
 
-func (c *Coupon) canBeUsed() bool {
+func (c *Coupon) canBeMarkedAsUsed() bool {
 	return c.status.Status() == ActiveStatus
 }
 
 func (c *Coupon) Use(timeProvider domain.TimeProvider) *domain.DomainError {
-	if !c.canBeUsed() {
+	if !c.canBeMarkedAsUsed() {
+		// TODO: better error
 		return CouponAlreadyUsedErr
 	}
 
-	c.status = c.status.(*activeStatus).Use(timeProvider)
+	c.status = c.status.Use(timeProvider)
 
 	return nil
 }
 
 func (c *Coupon) canBeMarkedAsExpired(timeProvider domain.TimeProvider) bool {
-	isActive := c.status.Status() == ActiveStatus
-
-	if !isActive {
+	if !c.status.IsActive() {
 		return false
 	}
 
-	return c.status.(*activeStatus).isExpired(timeProvider)
+	return c.status.IsExpired(timeProvider)
 }
 
 func (c *Coupon) Expire(timeProvider domain.TimeProvider) *domain.DomainError {
@@ -114,7 +113,7 @@ func (c *Coupon) Expire(timeProvider domain.TimeProvider) *domain.DomainError {
 		return CouponCannotBeNotExpiredErr
 	}
 
-	c.status = c.status.(*activeStatus).Expire()
+	c.status = c.status.Expire(timeProvider)
 
 	return nil
 }
@@ -141,19 +140,19 @@ func (c *Coupon) Status() string {
 
 // TODO: should be moved to coupon
 func (c *Coupon) ExpireInDays() uint8 {
-	return c.status.(*activeStatus).expiresInDays
+	return c.status.ExpiresInDays()
 }
 
 func (c *Coupon) ActivatedAt() time.Time {
-	return c.status.(*activeStatus).activatedAt
+	return c.status.ActivatedAt()
 }
 
 func (c *Coupon) UsedAt() *time.Time {
-	return nil
+	return c.status.UsedAt()
 }
 
 func (c *Coupon) ExpiredAt() *time.Time {
-	return nil
+	return c.status.ExpiredAt()
 }
 
 func (c *Coupon) String() string {

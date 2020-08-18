@@ -104,9 +104,7 @@ func TestCouponUse(t *testing.T) {
 			t.Errorf("expected %q but received %q", UsedStatus, c.Status())
 		}
 
-		s := c.status.(*usedStatus)
-
-		if !s.usedAt.Equal(fakeNow) {
+		if !c.UsedAt().Equal(fakeNow) {
 			t.Errorf("expected %q but received %q", UsedStatus, c.Status())
 		}
 	})
@@ -149,11 +147,8 @@ func TestCouponExpire(t *testing.T) {
 			t.Errorf("expected %q but received %q", ExpiredStatus, c.Status())
 		}
 
-		s := c.status.(*expiredStatus)
-
-		if !s.expiredAt.Equal(now.Add(-1 * time.Second)) {
-			t.Errorf("expected %q but received %q", s.expiredAt, now.Add(-1*time.Second))
-			t.Errorf("expected %q but received %q", ExpiredStatus, c.Status())
+		if !c.ExpiredAt().Equal(now) {
+			t.Errorf("expected %q but received %q", c.ExpiredAt(), now)
 		}
 	})
 
