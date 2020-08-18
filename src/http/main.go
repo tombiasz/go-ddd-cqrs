@@ -1,151 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	"go-coupons/src/http/handlers"
 	"go-coupons/src/http/middlewares"
 	"log"
 	"net/http"
-	"os"
-	"time"
-
-	"go-coupons/src/app/coupons/commands"
-	"go-coupons/src/app/coupons/db"
-	"go-coupons/src/app/coupons/queries"
-	timeutils "go-coupons/src/utils/time"
 
 	"github.com/go-chi/chi"
 )
-
-type IndexResponse struct {
-	Msg string `json:"msg"`
-}
-
-func HandleIndex(w http.ResponseWriter, _ *http.Request) {
-	var response = &IndexResponse{"Hello World!"}
-
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-}
-
-type GetCouponsResponse struct {
-	Id          string     `json:"id"`
-	Code        string     `json:"code"`
-	Email       string     `json:"email"`
-	Description string     `json:"description"`
-	Status      string     `json:"status"`
-	Expdays     uint8      `json:"expiriesInDays"`
-	ActivatedAt time.Time  `json:"activatedAt"`
-	ExpiredAt   *time.Time `json:"expiredAt"`
-	UsedAt      *time.Time `json:"usedAt"`
-}
-
-type GetCouponByIdResponse struct {
-	Id          string     `json:"id"`
-	Code        string     `json:"code"`
-	Email       string     `json:"email"`
-	Description string     `json:"description"`
-	Status      string     `json:"status"`
-	Expdays     uint8      `json:"expiriesInDays"`
-	ActivatedAt time.Time  `json:"activatedAt"`
-	ExpiredAt   *time.Time `json:"expiredAt"`
-	UsedAt      *time.Time `json:"usedAt"`
-}
-
-func GetCouponsHandler(w http.ResponseWriter, _ *http.Request) {
-	handler := &queries.GetCouponsQueryHandler{
-		DbConnectionFactory: db.NewDbConnectionFactory(os.Getenv("DATABASE_URL")),
-	}
-
-	result := handler.Query()
-
-	var response []GetCouponsResponse
-	for _, r := range result {
-		response = append(response, GetCouponsResponse(r))
-	}
-
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-}
-
-func GetCouponByIdHandler(w http.ResponseWriter, r *http.Request) {
-	couponId := chi.URLParam(r, "couponId")
-
-	handler := &queries.GetCouponByIdQueryHandler{
-		DbConnectionFactory: db.NewDbConnectionFactory(os.Getenv("DATABASE_URL")),
-	}
-
-	result := handler.Query(couponId)
-
-	response := GetCouponByIdResponse(result)
-
-	// TODO:
-	// - handle 404
-	// handle other errors
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-}
-
-type RegisterCouponRequest struct {
-	Email       *string `json:"email`
-	Description *string `json:"description"`
-}
-
-type RegisterCouponResponse struct {
-	Code string `json:"code`
-}
-
-func RegisterCouponHandler(w http.ResponseWriter, r *http.Request) {
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-
-	var req RegisterCouponRequest
-
-	err := d.Decode(&req)
-
-	if err != nil {
-		// bad JSON or unrecognized json field
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	repo := db.NewCouponRepository(
-		db.NewDbConnectionFactory(os.Getenv("DATABASE_URL")),
-	)
-
-	handler := &commands.RegisterCouponCommandHandler{
-		Repository:   repo,
-		TimeProvider: &timeutils.RealTimeProvider{},
-	}
-
-	cmd := &commands.RegisterCouponCommand{
-		Email:       *req.Email,
-		Description: *req.Description,
-	}
-
-	result, errDomain := handler.Execute(cmd)
-
-	if errDomain != nil {
-		http.Error(w, errDomain.Error(), http.StatusBadRequest)
-		return
-	}
-
-	response := RegisterCouponResponse(*result)
-
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-}
 
 func NewRouter() *chi.Mux {
 	r := chi.NewRouter()
@@ -153,10 +15,10 @@ func NewRouter() *chi.Mux {
 
 	r.Route("/api/v1", func(r chi.Router) {
 
-		r.MethodFunc("GET", "/", HandleIndex)
-		r.MethodFunc("GET", "/coupons", GetCouponsHandler)
-		r.MethodFunc("GET", "/coupons/{couponId}", GetCouponByIdHandler)
-		r.MethodFunc("POST", "/coupons", RegisterCouponHandler)
+		r.MethodFunc("GET", "/", handlers.IndexHandler)
+		r.MethodFunc("GET", "/coupons", handlers.GetCouponsHandler)
+		r.MethodFunc("GET", "/coupons/{couponId}", handlers.GetCouponByIdHandler)
+		r.MethodFunc("POST", "/coupons", handlers.RegisterCouponHandler)
 	})
 
 	return r
