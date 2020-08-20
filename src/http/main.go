@@ -20,6 +20,7 @@ func NewRouter() *chi.Mux {
 		r.MethodFunc("GET", "/coupons/{couponId}", handlers.GetCouponByIdHandler)
 		r.MethodFunc("POST", "/coupons", handlers.RegisterCouponHandler)
 		r.MethodFunc("POST", "/coupons/expire", handlers.ExpireCouponsHandler)
+		r.MethodFunc("POST", "/coupons/use", handlers.UseCouponHandler)
 	})
 
 	return r
