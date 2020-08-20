@@ -73,8 +73,63 @@ func (r *couponRepository) Save(c *coupon.Coupon) *domain.DomainError {
 	return nil
 }
 
-func (r *couponRepository) GetCouponByEmailAndCode(*coupon.Email, *coupon.Code) (*coupon.Coupon, *domain.DomainError) {
-	return nil, nil
+func (r *couponRepository) GetCouponByEmailAndCode(email *coupon.Email, code *coupon.Code) (*coupon.Coupon, *domain.DomainError) {
+	con := r.dbConnectionFactory.GetConnection()
+
+	row := con.QueryRow(
+		context.Background(),
+		`SELECT
+			id,
+			email,
+			code,
+			description,
+			status,
+			expdays,
+			activatedat,
+			expiredat,
+			usedat
+		 FROM coupons
+			WHERE email = $1
+				AND code = $2`,
+		email.Address(),
+		code.Value(),
+	)
+
+	var m CouponModel
+
+	err := row.Scan(
+		&m.Id,
+		&m.Email,
+		&m.Code,
+		&m.Description,
+		&m.Status,
+		&m.Expdays,
+		&m.ActivatedAt,
+		&m.ExpiredAt,
+		&m.UsedAt,
+	)
+
+	if err != nil {
+		panic(fmt.Sprintf("GetCouponByEmailAndCode scan failed: %v\n", err))
+	}
+
+	c, errDomain := coupon.New(
+		m.Id,
+		m.Email,
+		m.Code,
+		m.Description,
+		m.Status,
+		m.Expdays,
+		m.ActivatedAt,
+		m.ExpiredAt,
+		m.UsedAt,
+	)
+
+	if errDomain != nil {
+		panic(fmt.Sprintf("GetCouponByEmailAndCode converting model to entity failed: %v\n", errDomain))
+	}
+
+	return c, nil
 }
 
 func (r *couponRepository) GetExpiredCoupons() ([]*coupon.Coupon, *domain.DomainError) {
