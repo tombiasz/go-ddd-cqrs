@@ -5,21 +5,7 @@ import (
 	"fmt"
 	"go-coupons/src/app/coupons/domain"
 	"go-coupons/src/app/coupons/domain/coupon"
-	"time"
 )
-
-// TODO: move to separate file
-type CouponModel struct {
-	Id          string
-	Code        string
-	Email       string
-	Description string
-	Status      string
-	Expdays     uint8
-	ActivatedAt time.Time
-	ExpiredAt   *time.Time
-	UsedAt      *time.Time
-}
 
 type couponRepository struct {
 	dbConnectionFactory DbConnectionFactory
@@ -95,7 +81,7 @@ func (r *couponRepository) GetCouponByEmailAndCode(email *coupon.Email, code *co
 		code.Value(),
 	)
 
-	var m CouponModel
+	var m couponModel
 
 	err := row.Scan(
 		&m.Id,
@@ -113,23 +99,7 @@ func (r *couponRepository) GetCouponByEmailAndCode(email *coupon.Email, code *co
 		panic(fmt.Sprintf("GetCouponByEmailAndCode scan failed: %v\n", err))
 	}
 
-	c, errDomain := coupon.New(
-		m.Id,
-		m.Email,
-		m.Code,
-		m.Description,
-		m.Status,
-		m.Expdays,
-		m.ActivatedAt,
-		m.ExpiredAt,
-		m.UsedAt,
-	)
-
-	if errDomain != nil {
-		panic(fmt.Sprintf("GetCouponByEmailAndCode converting model to entity failed: %v\n", errDomain))
-	}
-
-	return c, nil
+	return m.ToEntity(), nil
 }
 
 func (r *couponRepository) GetExpiredCoupons() ([]*coupon.Coupon, *domain.DomainError) {
@@ -160,7 +130,7 @@ func (r *couponRepository) GetExpiredCoupons() ([]*coupon.Coupon, *domain.Domain
 	var coupons []*coupon.Coupon
 
 	for rows.Next() {
-		var m CouponModel
+		var m couponModel
 
 		err := rows.Scan(
 			&m.Id,
@@ -178,23 +148,7 @@ func (r *couponRepository) GetExpiredCoupons() ([]*coupon.Coupon, *domain.Domain
 			panic(fmt.Sprintf("GetExpiredCoupons scan failed: %v\n", err))
 		}
 
-		c, errDomain := coupon.New(
-			m.Id,
-			m.Email,
-			m.Code,
-			m.Description,
-			m.Status,
-			m.Expdays,
-			m.ActivatedAt,
-			m.ExpiredAt,
-			m.UsedAt,
-		)
-
-		if errDomain != nil {
-			panic(fmt.Sprintf("GetExpiredCoupons converting model to entity failed: %v\n", errDomain))
-		}
-
-		coupons = append(coupons, c)
+		coupons = append(coupons, m.ToEntity())
 	}
 
 	// TODO: are two return values needed?
