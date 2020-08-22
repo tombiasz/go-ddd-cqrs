@@ -2,24 +2,47 @@ package coupon
 
 import "go-coupons/src/app/coupons/domain"
 
-var DescriptionCannotBeEmptyErr = domain.NewDomainError("description", "description cannot be empty")
+var DescriptionCannotBeEmptyErr = domain.NewDomainError(
+	"coupons.description.empty",
+	"description cannot be empty",
+)
 
-var DescriptionCannotBeLongerThan200CharsErr = domain.NewDomainError("description", "description must have less than 200 characters")
+var DescriptionCannotBeLongerThan200CharsErr = domain.NewDomainError(
+	"coupons.description.max-length",
+	"description must have less than 200 characters",
+)
 
-var DescriptionCannotBeNilErr = domain.NewDomainError("description", "description cannot be nil")
+var EmailCannotBeEmptyErr = domain.NewDomainError(
+	"coupons.email.empty",
+	"email address cannot be empty",
+)
 
-var EmailCannotBeEmptyErr = domain.NewDomainError("email", "email address cannot be empty")
+var EmailIsInvalidErr = domain.NewDomainError(
+	"coupons.email.invalid",
+	"email address is invalid",
+)
 
-var EmailIsInvalidErr = domain.NewDomainError("email", "email address is invalid")
+var CouponAlreadyUsedErr = domain.NewDomainError(
+	"coupons.coupon.is-used",
+	"coupon already been used",
+)
 
-var EmailCannotBeNilErr = domain.NewDomainError("email", "email address cannot be nil")
+var CodeCannotBeEmptyErr = domain.NewDomainError(
+	"coupons.code.empty",
+	"code cannot be empty",
+)
 
-var CouponAlreadyUsedErr = domain.NewDomainError("coupon", "coupon already been used")
+var CodeIsInvalidErr = domain.NewDomainError(
+	"coupons.code.invalid",
+	"code is invalid",
+)
 
-var CodeCannotBeEmptyErr = domain.NewDomainError("code", "code cannot be empty")
+var CouponCannotBeNotExpiredErr = domain.NewDomainError(
+	"coupons.status.cannot-be-marked-as-expired",
+	"coupon cannot be marked as expired",
+)
 
-var CodeIsInvalidErr = domain.NewDomainError("code", "code is invalid")
-
-var CouponCannotBeNotExpiredErr = domain.NewDomainError("status", "coupon cannot be marked as expired")
-
-var CouponIdIsInvalidErr = domain.NewDomainError("couponId", "coupon id is invalid")
+var CouponIdIsInvalidErr = domain.NewDomainError(
+	"coupons.couponId.invalid",
+	"coupon id is invalid",
+)
