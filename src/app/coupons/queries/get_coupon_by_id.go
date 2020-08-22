@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"go-coupons/src/app/coupons/db"
+
+	"github.com/jackc/pgx/v4"
 )
 
 type GetCouponByIdQueryHandler struct {
@@ -24,7 +26,7 @@ type GetCouponByIdQueryResult struct {
 	UsedAt      *time.Time
 }
 
-func (h *GetCouponByIdQueryHandler) Query(couponId string) GetCouponByIdQueryResult {
+func (h *GetCouponByIdQueryHandler) Query(couponId string) *GetCouponByIdQueryResult {
 	con := h.DbConnectionFactory.GetConnection()
 	defer con.Close()
 
@@ -60,8 +62,12 @@ func (h *GetCouponByIdQueryHandler) Query(couponId string) GetCouponByIdQueryRes
 	)
 
 	if err != nil {
-		panic(fmt.Sprintf("GetCouponsQuery scan failed: %v\n", err))
+		if err == pgx.ErrNoRows {
+			return nil
+		}
+
+		panic(fmt.Sprintf("GetCouponByIdQuery scan failed: %v\n", err))
 	}
 
-	return r
+	return &r
 }

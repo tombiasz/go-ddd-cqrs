@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"go-coupons/src/app/coupons/db"
 	"go-coupons/src/app/coupons/queries"
 	"net/http"
@@ -32,11 +33,13 @@ func GetCouponByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	result := handler.Query(couponId)
 
-	response := GetCouponByIdResponse(result)
+	if result == nil {
+		JSONError(w, errors.New("coupon not found"), 404)
+		return
+	}
 
-	// TODO:
-	// - handle 404
-	// handle other errors
+	response := GetCouponByIdResponse(*result)
+
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
