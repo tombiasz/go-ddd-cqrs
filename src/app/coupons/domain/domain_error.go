@@ -6,14 +6,14 @@ import (
 )
 
 type DomainError struct {
-	Property string
-	Message  string
+	Code    string
+	Message string
 }
 
 type DomainErrors []*DomainError
 
 func (e *DomainError) Error() string {
-	return fmt.Sprintf("DomainError - %s - %s", e.Property, e.Message)
+	return fmt.Sprintf("DomainError - %s - %s", e.Code, e.Message)
 }
 
 func (e *DomainError) AsDomainErrors() DomainErrors {
@@ -44,4 +44,14 @@ func (errs DomainErrors) Error() string {
 	}
 
 	return buffer.String()
+}
+
+func (errs DomainErrors) AsMap() map[string]string {
+	m := make(map[string]string)
+
+	for _, e := range errs {
+		m[e.Code] = e.Message
+	}
+
+	return m
 }

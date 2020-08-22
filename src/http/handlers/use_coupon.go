@@ -44,7 +44,7 @@ func UseCouponHandler(w http.ResponseWriter, r *http.Request) {
 	errDomain := handler.Execute(cmd)
 
 	if errDomain != nil {
-		http.Error(w, errDomain.Error(), http.StatusBadRequest)
+		JSONDomainErrors(w, errDomain, 400)
 		return
 	}
 
