@@ -91,8 +91,7 @@ func (c *Coupon) canBeMarkedAsUsed() bool {
 
 func (c *Coupon) Use(timeProvider domain.TimeProvider) *domain.DomainError {
 	if !c.canBeMarkedAsUsed() {
-		// TODO: better error
-		return CouponAlreadyUsedErr
+		return CouponCannotBeMarkedAsUsedErr
 	}
 
 	c.status = c.status.Use(timeProvider)
@@ -110,7 +109,7 @@ func (c *Coupon) canBeMarkedAsExpired(timeProvider domain.TimeProvider) bool {
 
 func (c *Coupon) Expire(timeProvider domain.TimeProvider) *domain.DomainError {
 	if !c.canBeMarkedAsExpired(timeProvider) {
-		return CouponCannotBeNotExpiredErr
+		return CouponCannotBeMarkedAsUsedErr
 	}
 
 	c.status = c.status.Expire(timeProvider)

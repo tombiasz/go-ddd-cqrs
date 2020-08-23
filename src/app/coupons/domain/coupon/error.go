@@ -22,9 +22,9 @@ var EmailIsInvalidErr = domain.NewDomainError(
 	"email address is invalid",
 )
 
-var CouponAlreadyUsedErr = domain.NewDomainError(
-	"coupons.coupon.is-used",
-	"coupon already been used",
+var CouponCannotBeMarkedAsUsedErr = domain.NewDomainError(
+	"coupons.coupon.cannot-be-marked-as-used",
+	"coupon cannot be marked as used",
 )
 
 var CodeCannotBeEmptyErr = domain.NewDomainError(
@@ -37,7 +37,7 @@ var CodeIsInvalidErr = domain.NewDomainError(
 	"code is invalid",
 )
 
-var CouponCannotBeNotExpiredErr = domain.NewDomainError(
+var CouponCannotBeMarkedAdExpiredErr = domain.NewDomainError(
 	"coupons.status.cannot-be-marked-as-expired",
 	"coupon cannot be marked as expired",
 )

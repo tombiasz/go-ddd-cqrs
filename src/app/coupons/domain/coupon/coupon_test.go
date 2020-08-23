@@ -123,8 +123,8 @@ func TestCouponUse(t *testing.T) {
 
 		err = c.Use(fixedTimeProvider)
 
-		if err != CouponAlreadyUsedErr {
-			t.Errorf("expected %q but received %q", CouponAlreadyUsedErr, err)
+		if err != CouponCannotBeMarkedAsUsedErr {
+			t.Errorf("expected %q but received %q", CouponCannotBeMarkedAsUsedErr, err)
 		}
 	})
 }
@@ -162,8 +162,8 @@ func TestCouponExpire(t *testing.T) {
 
 		err := c.Expire(fixedTimeProvider)
 
-		if err != CouponCannotBeNotExpiredErr {
-			t.Errorf("expected %q but received %q", CouponCannotBeNotExpiredErr, err)
+		if err != CouponCannotBeMarkedAsUsedErr {
+			t.Errorf("expected %q but received %q", CouponCannotBeMarkedAsUsedErr, err)
 		}
 	})
 }
