@@ -6,7 +6,6 @@ import (
 	"go-coupons/src/app/coupons/db"
 	"go-coupons/src/app/coupons/queries"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -24,25 +23,27 @@ type GetCouponByIdResponse struct {
 	UsedAt      *time.Time `json:"usedAt"`
 }
 
-func GetCouponByIdHandler(w http.ResponseWriter, r *http.Request) {
-	couponId := chi.URLParam(r, "couponId")
+func CreateGetCouponByIdHandler(dbUrl string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		couponId := chi.URLParam(r, "couponId")
 
-	handler := &queries.GetCouponByIdQueryHandler{
-		DbConnectionFactory: db.NewDbConnectionFactory(os.Getenv("DATABASE_URL")),
-	}
+		handler := &queries.GetCouponByIdQueryHandler{
+			DbConnectionFactory: db.NewDbConnectionFactory(dbUrl),
+		}
 
-	result := handler.Query(couponId)
+		result := handler.Query(couponId)
 
-	if result == nil {
-		JSONError(w, errors.New("coupon not found"), 404)
-		return
-	}
+		if result == nil {
+			JSONError(w, errors.New("coupon not found"), 404)
+			return
+		}
 
-	response := GetCouponByIdResponse(*result)
+		response := GetCouponByIdResponse(*result)
 
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
 	}
 }

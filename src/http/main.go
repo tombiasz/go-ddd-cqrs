@@ -5,6 +5,7 @@ import (
 	"go-coupons/src/http/middlewares"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 )
@@ -13,14 +14,16 @@ func NewRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middlewares.ContentTypeJson)
 
+	dbUrl := os.Getenv("DATABASE_URL")
+
 	r.Route("/api/v1", func(r chi.Router) {
 
 		r.MethodFunc("GET", "/", handlers.IndexHandler)
-		r.MethodFunc("GET", "/coupons", handlers.GetCouponsHandler)
-		r.MethodFunc("GET", "/coupons/{couponId}", handlers.GetCouponByIdHandler)
-		r.MethodFunc("POST", "/coupons", handlers.RegisterCouponHandler)
-		r.MethodFunc("POST", "/coupons/expire", handlers.ExpireCouponsHandler)
-		r.MethodFunc("POST", "/coupons/use", handlers.UseCouponHandler)
+		r.MethodFunc("GET", "/coupons", handlers.CreateGetCouponsHandler(dbUrl))
+		r.MethodFunc("GET", "/coupons/{couponId}", handlers.CreateGetCouponByIdHandler(dbUrl))
+		r.MethodFunc("POST", "/coupons", handlers.CreateRegisterCouponHandler(dbUrl))
+		r.MethodFunc("POST", "/coupons/expire", handlers.CreateExpireCouponsHandler(dbUrl))
+		r.MethodFunc("POST", "/coupons/use", handlers.CreateUseCouponHandler(dbUrl))
 	})
 
 	return r

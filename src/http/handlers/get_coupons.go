@@ -5,7 +5,6 @@ import (
 	"go-coupons/src/app/coupons/db"
 	"go-coupons/src/app/coupons/queries"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -21,21 +20,23 @@ type GetCouponsResponse struct {
 	UsedAt      *time.Time `json:"usedAt"`
 }
 
-func GetCouponsHandler(w http.ResponseWriter, _ *http.Request) {
-	handler := &queries.GetCouponsQueryHandler{
-		DbConnectionFactory: db.NewDbConnectionFactory(os.Getenv("DATABASE_URL")),
-	}
+func CreateGetCouponsHandler(dbUrl string) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		handler := &queries.GetCouponsQueryHandler{
+			DbConnectionFactory: db.NewDbConnectionFactory(dbUrl),
+		}
 
-	result := handler.Query()
+		result := handler.Query()
 
-	var response []GetCouponsResponse
-	for _, r := range result {
-		response = append(response, GetCouponsResponse(r))
-	}
+		var response []GetCouponsResponse
+		for _, r := range result {
+			response = append(response, GetCouponsResponse(r))
+		}
 
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
 	}
 }
