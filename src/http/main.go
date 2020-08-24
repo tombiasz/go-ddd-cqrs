@@ -45,12 +45,6 @@ func main() {
 		Handler: appRouter,
 	}
 
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("Recovered in f %s", r)
-		}
-	}()
-
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Server startup failed")
 	}
