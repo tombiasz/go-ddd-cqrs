@@ -17,6 +17,7 @@ func NewRouter(conf config.AppConfig) *chi.Mux {
 	r.Use(middlewares.ContentTypeJson)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.StripSlashes)
+	r.Use(middleware.Logger)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.MethodFunc("GET", "/", handlers.IndexHandler)
