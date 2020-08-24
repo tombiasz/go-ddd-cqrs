@@ -9,11 +9,13 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 func NewRouter(conf config.AppConfig) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middlewares.ContentTypeJson)
+	r.Use(middleware.Recoverer)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.MethodFunc("GET", "/", handlers.IndexHandler)
@@ -37,6 +39,12 @@ func main() {
 		Addr:    fmt.Sprintf(":%s", conf.AppPort),
 		Handler: appRouter,
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Recovered in f %s", r)
+		}
+	}()
 
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Server startup failed")
