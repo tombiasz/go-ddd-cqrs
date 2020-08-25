@@ -8,6 +8,7 @@ import (
 
 const DefaultCouponExpirationDays = 7
 
+// TODO: create and export Coupon interface to preserve encapsulation
 type Coupon struct {
 	id          *couponId
 	email       *Email
@@ -109,7 +110,7 @@ func (c *Coupon) canBeMarkedAsExpired(timeProvider domain.TimeProvider) bool {
 
 func (c *Coupon) Expire(timeProvider domain.TimeProvider) *domain.DomainError {
 	if !c.canBeMarkedAsExpired(timeProvider) {
-		return CouponCannotBeMarkedAsUsedErr
+		return CouponCannotBeMarkedAdExpiredErr
 	}
 
 	c.status = c.status.Expire(timeProvider)

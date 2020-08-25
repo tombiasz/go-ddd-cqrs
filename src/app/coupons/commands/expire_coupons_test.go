@@ -77,7 +77,7 @@ func TestExpireCouponsCommandHandler(t *testing.T) {
 		var found = lookupError(t, err, coupon.CouponCannotBeMarkedAdExpiredErr)
 
 		if !found {
-			t.Errorf("expected %q error but did not received one", coupon.CouponCannotBeMarkedAsUsedErr)
+			t.Errorf("expected %q error but did not received one", coupon.CouponCannotBeMarkedAdExpiredErr)
 		}
 	})
 
