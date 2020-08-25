@@ -1,5 +1,4 @@
-// TODO: update pkg name
-package main
+package db
 
 import (
 	"context"
