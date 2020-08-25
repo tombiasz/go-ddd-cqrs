@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -10,11 +9,7 @@ type IndexResponse struct {
 }
 
 func IndexHandler(w http.ResponseWriter, _ *http.Request) {
-	var response = &IndexResponse{"Hello World!"}
+	var response = &IndexResponse{"coupons api v1"}
 
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	JSONResponse(w, response)
 }

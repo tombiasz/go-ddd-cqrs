@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"go-coupons/src/app/coupons/db"
 	"go-coupons/src/app/coupons/queries"
@@ -40,10 +39,7 @@ func CreateGetCouponByIdHandler(dbUrl string) http.HandlerFunc {
 
 		response := GetCouponByIdResponse(*result)
 
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
+		JSONResponse(w, response)
+
 	}
 }

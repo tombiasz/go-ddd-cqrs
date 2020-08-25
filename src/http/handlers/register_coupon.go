@@ -27,8 +27,6 @@ func CreateRegisterCouponHandler(dbUrl string) http.HandlerFunc {
 		err := d.Decode(&req)
 
 		if err != nil {
-			// bad JSON or unrecognized json field
-			// http.Error(w, err.Error(), http.StatusBadRequest)
 			JSONError(w, err, http.StatusBadRequest)
 			return
 		}
@@ -56,10 +54,6 @@ func CreateRegisterCouponHandler(dbUrl string) http.HandlerFunc {
 
 		response := RegisterCouponResponse(*result)
 
-		err = json.NewEncoder(w).Encode(response)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
+		JSONResponse(w, response)
 	}
 }

@@ -38,3 +38,12 @@ func JSONDomainErrors(w http.ResponseWriter, errs domain.DomainErrors, code int)
 
 	json.NewEncoder(w).Encode(response)
 }
+
+func JSONResponse(w http.ResponseWriter, response interface{}) {
+	err := json.NewEncoder(w).Encode(response)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}

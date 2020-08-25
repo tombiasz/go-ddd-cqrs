@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"go-coupons/src/app/coupons/db"
 	"go-coupons/src/app/coupons/queries"
 	"net/http"
@@ -33,10 +32,6 @@ func CreateGetCouponsHandler(dbUrl string) http.HandlerFunc {
 			response = append(response, GetCouponsResponse(r))
 		}
 
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
+		JSONResponse(w, response)
 	}
 }
