@@ -3,6 +3,7 @@ package commands
 import (
 	"go-coupons/src/app/coupons/domain"
 	"go-coupons/src/app/coupons/domain/coupon"
+	"go-coupons/src/app/coupons/notifier"
 )
 
 type RegisterCouponCommand struct {
@@ -17,6 +18,7 @@ type RegisterCouponCommandResult struct {
 type RegisterCouponCommandHandler struct {
 	TimeProvider domain.TimeProvider
 	Repository   coupon.Repository
+	Notifier     notifier.Notifier
 }
 
 func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) (*RegisterCouponCommandResult, domain.DomainErrors) {
@@ -36,6 +38,8 @@ func (h *RegisterCouponCommandHandler) Execute(cmd *RegisterCouponCommand) (*Reg
 	if dbErr != nil {
 		return nil, dbErr.AsDomainErrors()
 	}
+
+	h.Notifier.Notify(coupon)
 
 	return &RegisterCouponCommandResult{coupon.Code()}, nil
 }

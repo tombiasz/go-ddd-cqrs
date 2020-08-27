@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go-coupons/src/app/coupons/commands"
 	"go-coupons/src/app/coupons/db"
+	"go-coupons/src/app/coupons/notifier"
 	timeutils "go-coupons/src/utils/time"
 	"net/http"
 )
@@ -35,9 +36,15 @@ func CreateRegisterCouponHandler(dbUrl string) http.HandlerFunc {
 			db.NewDbConnectionFactory(dbUrl),
 		)
 
+		notifier := notifier.CreateCouponBulkNotifier(
+			&notifier.CouponOwnerNotifier{},
+			&notifier.ExternalApiNotifier{},
+		)
+
 		handler := &commands.RegisterCouponCommandHandler{
 			Repository:   repo,
 			TimeProvider: &timeutils.RealTimeProvider{},
+			Notifier:     notifier,
 		}
 
 		cmd := &commands.RegisterCouponCommand{

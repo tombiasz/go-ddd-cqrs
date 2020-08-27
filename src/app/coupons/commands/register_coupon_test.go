@@ -22,6 +22,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
 			Repository:   nil,
+			Notifier:     nil,
 		}
 
 		_, err := handler.Execute(cmd)
@@ -66,9 +67,20 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 			onGetExpiredCoupons:       nil,
 		}
 
+		onNotify := func(coupon *coupon.Coupon) error {
+			if coupon.Email() != cmd.Email {
+				t.Errorf("want %q got %q", cmd.Email, coupon.Email())
+			}
+
+			return nil
+		}
+
+		var fakeNotifier = &FakeNotifier{onNotify: onNotify}
+
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
 			Repository:   fakeRepo,
+			Notifier:     fakeNotifier,
 		}
 
 		result, err := handler.Execute(cmd)
@@ -105,6 +117,7 @@ func TestRegisterCouponCommandHandler(t *testing.T) {
 		var handler = &RegisterCouponCommandHandler{
 			TimeProvider: fixedTimeProvider,
 			Repository:   fakeRepo,
+			Notifier:     nil,
 		}
 
 		_, err := handler.Execute(cmd)

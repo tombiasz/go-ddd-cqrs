@@ -39,3 +39,11 @@ func lookupError(t *testing.T, errs domain.DomainErrors, err error) bool {
 
 	return found
 }
+
+type FakeNotifier struct {
+	onNotify func(*coupon.Coupon) error
+}
+
+func (n *FakeNotifier) Notify(coupon *coupon.Coupon) error {
+	return n.onNotify(coupon)
+}
